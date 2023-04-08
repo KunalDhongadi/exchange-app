@@ -1,0 +1,217 @@
+const express = require("express");
+const fetch = require('node-fetch2');
+var jwt = require('jsonwebtoken');
+var fetchUser = require("../middleware/fetchuser");
+const User = require("../models/User");
+const Active = require("../models/Active");
+const Transactions = require("../models/Transaction");
+const Transaction = require("../models/Transaction");
+const router = express.Router();
+
+// const { body, validationResult } = require("express-validator");
+
+// Route 1: Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
+router.get("/fetchalltokens", async (req, res) => {
+
+  let user = null;
+  const token =  req.header('auth-token');
+  if(token){
+    try {
+      const data = jwt.verify(token, "kunal");
+      user = data.user;
+    }catch (error) {
+      user = null;
+    }
+  }
+
+  try {
+    const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=8&page=1&sparkline=false";
+    const response = await fetch(url);
+    const tokens = await response.json();
+
+    if(user){
+        const fetchedUser = await User.findById(user.id);
+        tokens.forEach(token => {
+            token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); // Replace "id" with the ID field of each token in the JSON object
+        });
+    }
+
+    res.json(tokens);
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: "Some error occured"});
+  }
+});
+
+// Route 2: Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
+router.get("/fetchtoken/:symbol", async (req, res) => {
+
+  let user = null;
+  const token =  req.header('auth-token');
+  if(token){
+    try {
+      const data = jwt.verify(token, "kunal");
+      user = data.user;
+    }catch (error) {
+      user = null;
+    }
+  }
+
+  try {
+    const symbol = req.params.symbol;
+    const url = `https://api.coingecko.com/api/v3/coins/${symbol}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`;
+    const response = await fetch(url);
+    const token = await response.json();
+
+    console.log("bdabda", token.market_data[0]);
+
+    // Deleting unwanted fields
+    delete token.asset_platform_id;
+    delete token.platforms;
+    delete token.detail_platforms;
+    delete token.ico_data;
+    delete token.public_interest_stats;
+
+    delete token.links.chat_url;
+    delete token.links.announcement_url;
+    delete token.links.facebook_username;
+    delete token.links.repos_url;
+    delete token.links.bitcointalk_thread_identifier;
+
+    delete token.market_data.ath;
+    delete token.market_data.ath_change_percentage;
+    delete token.market_data.ath_date;
+    delete token.market_data.atl;
+    delete token.market_data.atl_change_percentage;
+    delete token.market_data.atl_date;
+    delete token.market_data.fully_diluted_valuation;
+    delete token.market_data.high_24h;
+    delete token.market_data.low_24h;
+    delete token.market_data.price_change_24h_in_currency;
+    delete token.market_data.price_change_percentage_1h_in_currency;
+    delete token.market_data.price_change_percentage_24h_in_currency;
+    delete token.market_data.price_change_percentage_7d_in_currency;
+    delete token.market_data.price_change_percentage_14d_in_currency;
+    delete token.market_data.price_change_percentage_30d_in_currency;
+    delete token.market_data.price_change_percentage_60d_in_currency;
+    delete token.market_data.price_change_percentage_200d_in_currency;
+    delete token.market_data.price_change_percentage_1y_in_currency;
+    delete token.market_data.market_cap_change_24h_in_currency;
+    delete token.market_data.market_cap_change_percentage_24h_in_currency;
+
+    // Deleting unwanted currency prices
+    for(let currency in token.market_data.current_price){
+      if(!(currency === "inr" || currency === "usd" || currency === "eur" || currency === "btc" || currency === "eth" || currency === "gbp")){
+        delete token.market_data.current_price[currency];
+        delete token.market_data.market_cap[currency];
+        delete token.market_data.total_volume[currency];
+      }
+    }
+
+
+    if(user){
+        const fetchedUser = await User.findById(user.id);
+        token.iswatchlisted =  fetchedUser.watchlist.includes(token.symbol); 
+    }
+
+    res.json(token);
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: "Some error occured"});
+  }
+});
+
+
+// Route 3: Get the active investments/ portfolio of the user. For each token in the db, fetch their live prices
+
+router.get("/fetchactive", fetchUser,  async (req, res) => {
+  try {
+    const tokens = await Active.find({ user: req.user.id }).lean();
+    let tokenIds = [];
+
+    let portfolioValue = 0, totalInvested = 0, totalReturns=0 , returnsPercentage=0;
+
+    for (let i = 0; i < tokens.length; i++) {
+      tokenIds.push(encodeURIComponent(tokens[i].token_id));
+    }
+    
+    const queryIds = tokenIds.join(",");
+    console.log(`ids=${queryIds}`);
+
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
+    const response = await fetch(url);
+    const tokenData = await response.json();
+
+    for (let i = 0; i < tokens.length; i++) {
+      const averageCost = await getAverageCost(req.user.id, tokens[i].token_id);
+      tokens[i].averageCost = averageCost;      
+      let id = tokens[i].token_id; 
+      tokens[i].price = tokenData[id];
+
+      // console.log("priceee", tokenData[id])
+
+      portfolioValue += tokens[i].quantity * tokenData[id].inr;
+      totalInvested += tokens[i].quantity * tokens[i].averageCost;
+    }
+
+    totalReturns = portfolioValue - totalInvested;
+    returnsPercentage = (totalReturns/ totalInvested) * 100;
+
+
+    res.json({portfolioValue,totalInvested, totalReturns, returnsPercentage,tokens});
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Some error occured (Active Tokens)");
+  }
+});
+
+// Route 4: Get the transaction history of the investments. Login Required.
+router.get("/fetchtransactions", fetchUser,  async (req, res) => {
+  try {
+    const transactions = await Transactions.find({ user: req.user.id });
+    res.json(transactions);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Some error occured");
+  }
+});
+
+
+// Route 5: Get all the required details of a particular token w.r.t the current user. Login required.
+
+router.get("/fetchdetails/:token_id", fetchUser,  async (req, res) => {
+  try {
+    const activeTokens = await Active.find({ user: req.user.id, token_id: req.params.token_id}).lean();
+    const transactions = await Transaction.find({ user: req.user.id, token_id: req.params.token_id}).lean();
+
+    // Adding average token cost
+    for (let i = 0; i < activeTokens.length; i++) {
+      const averageCost = await getAverageCost(req.user.id, activeTokens[i].token_id);
+      activeTokens[i].averageCost = averageCost;      
+    }
+
+    // console.log(req.params.symbol);
+    res.json({activeTokens, transactions});
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Some error occured while fetching details");
+  }
+});
+
+
+const getAverageCost = async(user, token_id) =>{
+  const transactions = await Transaction.find({user:user, token_id: token_id, quantity : { $gt:0 }});
+  let quantitySum = 0;
+  let priceSum = 0;
+  transactions.forEach(transaction => {
+    quantitySum += transaction.quantity;
+    priceSum += transaction.price;
+  });
+  console.log("gd", priceSum/ quantitySum);
+  return (priceSum / quantitySum);
+}
+
+
+module.exports = router;
