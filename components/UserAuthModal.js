@@ -10,7 +10,7 @@ const UserAuthModal = () => {
     // const[isVisible, setIsVisible] = useState(showModal);
     const {showModal, setShowModal, isLogin, setIsLogin} = useContext(ModalContext);
 
-    console.log("isOpened in userauthmodal", showModal);
+    // console.log("isOpened in userauthmodal", showModal);
 
     // const onClick = () =>{
     //     setIsVisible(true);

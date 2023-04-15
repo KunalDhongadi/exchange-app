@@ -8,11 +8,11 @@ import ModalContext from '../../context/modalContext'
 
 export default function MyApp({ Component, pageProps }) {
 
-  const[userData, setUserData] = useState([]);
+  const[userData, setUserData] = useState();
   const[authtoken, setAuthtoken] = useState(""); //auth-token
 
   const [showModal, setShowModal] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   // const [tokenDetails, setTokenDetails] = useState([]);
 
@@ -36,9 +36,9 @@ export default function MyApp({ Component, pageProps }) {
   
   useEffect(() => {
     setAuthtoken(localStorage.getItem("token"));
-    console.log("authtoken--",authtoken);
+    // console.log("authtoken--",authtoken);
     fetchUser(authtoken);
-    console.log(".......UseEffect fetchUser _app.js................");
+    console.log(".......UseEffect fetchUser(_app.js)................");
     // console.log("app.js- userData", userData);
   }, [authtoken]);
 

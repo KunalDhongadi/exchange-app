@@ -4,7 +4,9 @@ import UserContext from '../context/userContext';
 
 const Login = () => {
 
-    const {setToken} = useContext(UserContext);
+    const { userData, setUserData, authtoken, setAuthtoken } =
+    useContext(UserContext);
+
     const {setShowModal, setIsLogin} = useContext(ModalContext);
     
     const [username, setUsername] = useState("");
@@ -38,7 +40,7 @@ const Login = () => {
         const json = await response.json();
         if (json.success) {
             localStorage.setItem("token", json.authToken);
-            setToken(json.authToken);
+            setAuthtoken(json.authToken);
             setShowModal(false);
             setUsername("");
             setPassword("");

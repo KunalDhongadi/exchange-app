@@ -8,15 +8,18 @@ import { useRouter } from "next/router";
 const AuthModal = dynamic(() => import("./UserAuthModal"), { ssr: false });
 
 const Navbar = () => {
+  const { userData, setUserData, authtoken, setAuthtoken } =
+    useContext(UserContext);
 
-  const {userData, setUserData} = useContext(UserContext);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   // useEffect(() => {
-    
+
   //   console.log("useEffect- get user from context navbar.js");
   // }, []);
-  
-  // console.log("badlapur", userData);
+
+  // console.log("user", userData);
 
   const { showModal, setShowModal, isLogin, setIsLogin } =
     useContext(ModalContext);
@@ -31,22 +34,33 @@ const Navbar = () => {
     setIsLogin(false);
   };
 
-
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
     setUserData(null);
-  }
+    setAuthtoken(null);
+  };
 
-  const router = useRouter()
+  const router = useRouter();
   const { pathname } = router;
-  
+
   // console.log("pageUrl", pathname);
 
-  if(userData === undefined){
-    return null;
-  }
-  
+  // if(userData === undefined){
+  //   return null;
+  // }
+
+  const onMenuExpand = () => {
+    setShowMenu(true);
+  };
+
+  const onMenuClose = () => {
+    setShowMenu(false);
+  };
+
+  const onDropDownBtnClick = () => {
+    setShowDropdown(!showDropdown);
+  };
 
   return (
     <>
@@ -56,9 +70,9 @@ const Navbar = () => {
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700"
                 aria-controls="mobile-menu"
-                aria-expanded="false"
+                // aria-expanded={showMenu}
               >
                 <span className="sr-only">Open main menu</span>
                 {/* <!--
@@ -67,12 +81,13 @@ const Navbar = () => {
             Menu open: "hidden", Menu closed: "block"
           --> */}
                 <svg
-                  className="block h-6 w-6"
+                  className={`${!showMenu ? "block" : "hidden"} h-6 w-6`}
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
                   aria-hidden="true"
+                  onClick={onMenuExpand}
                 >
                   <path
                     strokeLinecap="round"
@@ -86,12 +101,13 @@ const Navbar = () => {
             Menu open: "block", Menu closed: "hidden"
            */}
                 <svg
-                  className="hidden h-6 w-6"
+                  className={`${showMenu ? "block" : "hidden"} h-6 w-6`}
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
                   aria-hidden="true"
+                  onClick={onMenuClose}
                 >
                   <path
                     strokeLinecap="round"
@@ -105,23 +121,29 @@ const Navbar = () => {
               <div className="flex flex-shrink-0 items-center">
                 <img
                   className="block h-8 w-auto lg:hidden"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                  src="https://tailwindui.com/img/logos/mark.svg?color=teal&shade=600"
                   alt="Your Company"
                 />
-                <img
-                  className="hidden h-8 w-auto lg:block"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt="Your Company"
-                />
-                <h1 className="ms-3 text-white font-semibold text-lg">
-                  Coindeck
-                </h1>
+                <Link href="/explore" className="flex items-center">
+                  <img
+                    className="hidden h-8 w-auto lg:block"
+                    src="https://tailwindui.com/img/logos/mark.svg?color=teal&shade=600"
+                    alt="Your Company"
+                  />
+                  <h1 className="ms-3 text-white font-semibold text-lg">
+                    Coindeck
+                  </h1>
+                </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex justify-between w-full">
                 <div className="flex space-x-4">
                   <Link
                     href="/explore"
-                    className={`text-white rounded-md px-3 py-2 text-sm font-medium ${pathname === "/explore" ? "bg-gray-900" : "hover:bg-gray-700" }`}
+                    className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                      pathname === "/explore"
+                        ? "bg-gray-900"
+                        : "hover:bg-gray-700"
+                    }`}
                     aria-current={pathname === "/explore" ? "page" : undefined}
                   >
                     Explore
@@ -130,16 +152,28 @@ const Navbar = () => {
                     <>
                       <Link
                         href="/portfolio"
-                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${pathname === "/portfolio" ? "bg-gray-900" : "hover:bg-gray-700" }`}
-                        aria-current={pathname === "/portfolio" ? "page" : undefined}
+                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                          pathname === "/portfolio"
+                            ? "bg-gray-900"
+                            : "hover:bg-gray-700"
+                        }`}
+                        aria-current={
+                          pathname === "/portfolio" ? "page" : undefined
+                        }
                       >
                         Portfolio
                       </Link>
 
                       <Link
                         href="/transactions"
-                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${pathname === "/transactions" ? "bg-gray-900" : "hover:bg-gray-700" }`}
-                        aria-current={pathname === "transactions" ? "page" : undefined}
+                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                          pathname === "/transactions"
+                            ? "bg-gray-900"
+                            : "hover:bg-gray-700"
+                        }`}
+                        aria-current={
+                          pathname === "transactions" ? "page" : undefined
+                        }
                       >
                         Transactions
                       </Link>
@@ -147,19 +181,20 @@ const Navbar = () => {
                   )}
                 </div>
 
-                {userData ?
-                
+                {userData ? (
                   <div className="flex space-x-4">
                     <button
                       id="dropdownAvatarNameButton"
                       data-dropdown-toggle="dropdownAvatarName"
-                      className="flex items-center border-2 border-gray-500 text-gray-300 hover:bg-gray-700 hover:text-white rounded-full px-3 py-1 text-sm font-medium"
+                      className="flex items-center border-gray-500 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md p-1 text-sm font-medium"
                       type="button"
+                      onClick={onDropDownBtnClick}
+                      // data-dropdown-offset-skidding="0"
                     >
                       <span className="sr-only">Open user menu</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 mx-1.5"
+                        className="w-6 h-6"
                         fill="currentColor"
                         viewBox="0 0 16 16"
                       >
@@ -197,9 +232,7 @@ const Navbar = () => {
                         aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
                       >
                         <li>
-                          <p
-                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                          >
+                          <p className="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                             Deposit
                           </p>
                         </li>
@@ -207,33 +240,83 @@ const Navbar = () => {
                       <div className="py-2">
                         <p
                           onClick={handleLogout}
-                          className="block px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                          className="block cursor-pointer px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Sign out
                         </p>
                       </div>
                     </div>
                   </div>
-                  :
+                ) : (
                   <div className="flex space-x-4">
                     <button
-                      className="border border-gray-300 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      className="border-2 border-teal-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                       onClick={toggleLoginModal}
                     >
                       Login
                     </button>
 
                     <button
-                      className="bg-red-500 text-white hover:bg-red-600 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      className="bg-teal-600 text-white hover:bg-teal-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                       onClick={toggleSignupModal}
                     >
                       Signup
                     </button>
                   </div>
-                }
-                
+                )}
               </div>
             </div>
+          </div>
+        </div>
+        {/* Mobile menu */}
+        <div
+          className={`${showMenu ? "block" : "hidden"} sm:hidden`}
+          id="mobile-menu"
+        >
+          <div className={`space-y-1 px-2 pb-3 pt-2`}>
+            <Link
+              href="/explore"
+              className="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium"
+              aria-current="page"
+            >
+              Explore
+            </Link>
+
+            {userData ? (
+              <>
+                <Link
+                  href="/portfolio"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+                >
+                  Portfolio
+                </Link>
+
+                <Link
+                  href="/transactions"
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+                >
+                  Transactions
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="border-t border-slate-700">
+                  <button
+                    className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 mt-2 font-medium w-full"
+                    onClick={toggleLoginModal}
+                  >
+                    Login
+                  </button>
+
+                  <button
+                    className="bg-teal-600 text-white hover:bg-teal-700 hover:text-white rounded-md px-3 py-2 mt-2 font-medium w-full"
+                    onClick={toggleSignupModal}
+                  >
+                    Signup
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </nav>

@@ -140,7 +140,7 @@ router.post("/sell",
             fetchedUser.cash = fetchedUser.cash + (parseFloat(quantity) * parseFloat(price));
             await fetchedUser.save();
 
-            res.json({success: true, message: "(Sell)Transaction Successfull"});
+            res.json({success: true, details:{name, quantity, price, totalValue:parseFloat(quantity) * parseFloat(price)}});
         } catch (error) {
             console.error(error.message);
             res.status(500).send("Some error occured while selling the token.");
@@ -148,7 +148,7 @@ router.post("/sell",
 });
 
 
-// Route 3: (Post) Watchlisting the stock
+// Route 3: (Post) Watchlisting the stock. Pass token_id as symbol
 router.post("/watchlist",
     fetchUser,
     [body("symbol", "Enter a symbol").exists()],
@@ -175,6 +175,71 @@ router.post("/watchlist",
         } catch (error) {
             console.error(error.message);
             res.status(500).send("Some error occured while watchlisting the token.");
+        }
+});
+
+
+// Route 4: (Post) Buying the stock
+router.post("/addholding",
+    fetchUser,
+    [
+    body("symbol", "Enter a symbol").exists(),
+    body("name", "Enter name").exists(),
+    body("token_id", "Enter token_id").exists(),
+    body("quantity", "Enter quantity").exists(),
+    body("image_url", "image url is required").exists()
+    ],
+    async (req, res) => {
+        try {
+            const {symbol,token_id, name, quantity, price, image_url, timestamp} = req.body;
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+            const fetchedUser = await User.findById(req.user.id);
+            const totalValue = parseFloat(quantity) * parseFloat(price);
+            // console.log({availableCash, totalValue});
+            // if(totalValue > availableCash){
+            //     return res.status(400).json({success:false, error:"You do not have enough balance"});
+            // }
+
+            let activeSymbol = await Active.findOne({ user: req.user.id, token_id: token_id });
+            // console.log(activeSymbol);
+            if (activeSymbol) {
+                // Update the existing record with the new quantity and total spent
+                activeSymbol.quantity += quantity;
+                await activeSymbol.save();
+            } else {
+                // Create a new record
+                activeSymbol = new Active({
+                    user: req.user.id,
+                    symbol: symbol,
+                    name: name,
+                    token_id: token_id,
+                    quantity: quantity,
+                    image_url: image_url
+                });
+                await activeSymbol.save();
+            }
+
+
+            // Add this to transaction
+            const transaction = new Transaction({
+                user: req.user.id,
+                symbol: symbol,
+                name: name,
+                token_id: token_id,
+                quantity: quantity,
+                price: price,
+                image_url: image_url
+            });
+            await transaction.save();
+        
+            res.json({success: true, details:{name, quantity, price, totalValue}});
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send("Some error occured while buying the token");
         }
 });
 

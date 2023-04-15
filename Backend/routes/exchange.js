@@ -112,7 +112,7 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
 
     if(user){
         const fetchedUser = await User.findById(user.id);
-        token.iswatchlisted =  fetchedUser.watchlist.includes(token.symbol); 
+        token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); 
     }
 
     res.json(token);
@@ -170,7 +170,7 @@ router.get("/fetchactive", fetchUser,  async (req, res) => {
 // Route 4: Get the transaction history of the investments. Login Required.
 router.get("/fetchtransactions", fetchUser,  async (req, res) => {
   try {
-    const transactions = await Transactions.find({ user: req.user.id });
+    const transactions = await Transactions.find({ user: req.user.id }).sort("-txn_timestamp");
     res.json(transactions);
   } catch (error) {
     console.error(error.message);
@@ -184,7 +184,7 @@ router.get("/fetchtransactions", fetchUser,  async (req, res) => {
 router.get("/fetchdetails/:token_id", fetchUser,  async (req, res) => {
   try {
     const activeTokens = await Active.find({ user: req.user.id, token_id: req.params.token_id}).lean();
-    const transactions = await Transaction.find({ user: req.user.id, token_id: req.params.token_id}).lean();
+    const transactions = await Transaction.find({ user: req.user.id, token_id: req.params.token_id}).sort("-txn_timestamp").lean();
 
     // Adding average token cost
     for (let i = 0; i < activeTokens.length; i++) {
@@ -205,6 +205,7 @@ const getAverageCost = async(user, token_id) =>{
   const transactions = await Transaction.find({user:user, token_id: token_id, quantity : { $gt:0 }});
   let quantitySum = 0;
   let priceSum = 0;
+  // console.log({transactions});
   transactions.forEach(transaction => {
     quantitySum += transaction.quantity;
     priceSum += transaction.price;

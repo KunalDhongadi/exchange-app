@@ -1,8 +1,12 @@
 import React, { useContext, useState } from 'react';
 import ModalContext from '../context/modalContext';
+import UserContext from '../context/userContext';
 
 const Signup = () => {
 
+
+    const { userData, setUserData, authtoken, setAuthtoken } =
+    useContext(UserContext);
 
     const {setShowModal, setIsLogin} = useContext(ModalContext);
 
@@ -43,6 +47,7 @@ const Signup = () => {
         const json = await response.json();
         if (json.success) {
             localStorage.setItem("token", json.authToken);
+            setAuthtoken(json.authToken);
             setShowModal(false);
             setUsername("");
             setEmail("");
