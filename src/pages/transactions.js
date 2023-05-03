@@ -27,13 +27,18 @@ const transactions = () => {
 
   // console.log("user txn", userData);
 
+  // useEffect(() => {
+  //   if (!userData) {
+  //     router.push("/explore");
+  //   } else {
+  //     console.log("useEffect for getting transactions page");
+  //     fetchtransactions();
+  //   }
+  // }, [userData]);
+
   useEffect(() => {
-    if (!userData) {
-      router.push("/explore");
-    } else {
       console.log("useEffect for getting transactions page");
       fetchtransactions();
-    }
   }, [userData]);
 
   // console.log("transactions", transactions);
@@ -82,40 +87,42 @@ const transactions = () => {
     <>
       {userData && (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-2">
-          <h1 className="text-xl font-medium my-3">Transactions</h1>
-          <div className="relative overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-3 overflow-x-auto">
-              <thead className="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3">
+          {transactions && transactions.length > 0 ? (
+            <>
+          <h1 className="text-md font-medium text-zinc-200 my-3">Transactions</h1>
+
+          <div className="overflow-x-auto border pb-4 border-zinc-600 rounded-lg">
+            <div className="table w-full text-sm text-left">
+              <div className="table-header-group text-xs text-zinc-500">
+                <div className="table-row font-medium text-zinc-400">
+                  <div className="table-cell border-b border-r bg-zinc-800 md:bg-inherit border-zinc-600 px-6 py-3 md:border-x-0 sticky left-0 md:static">
                     Asset name
-                  </th>
-                  <th scope="col" className="px-6 py-3">
+                  </div>
+                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
                     Price
-                  </th>
-                  <th scope="col" className="px-6 py-3">
+                  </div>
+                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
                     Quantity
-                  </th>
-                  <th scope="col" className="px-6 py-3">
+                  </div>
+                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
                     Total Value
-                  </th>
-                  <th scope="col" className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions &&
-                  transactions.map((transaction) => {
+                  </div>
+                  <div className="table-cell border-b border-zinc-600 px-6 py-3"></div>
+                </div>
+              </div>
+              <div className="table-row-group">
+                {transactions.map((transaction) => {
                     let totalValue = transaction.quantity * transaction.price;
                     let tokenUrl = `coins/${transaction.token_id}`;
                     return (
-                      <tr
+                      <div
                         key={transaction.txn_timestamp}
-                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                        className="table-row text-white dark:bg-zinc-800 dark:border-zinc-600"
                       >
-                        <th
-                          scope="row"
-                          className="px-6 py-4 flex font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        <div
+                          className="table-cell border-b border-r bg-zinc-800 md:bg-inherit border-zinc-600 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
                         >
+                          <div className="flex w-max">
                           <img
                             src={transaction.image_url}
                             alt={transaction.name}
@@ -123,24 +130,26 @@ const transactions = () => {
                           />
 
                           <div className="ms-3">
-                            <Link href={tokenUrl} className="hover:underline">
+                            <Link href={tokenUrl} className="text-lg font-medium hover:underline">
                               {transaction.name}
                             </Link>
-                            <p className="text-gray-400">
+                            <p className="text-zinc-400">
                               {transaction.symbol.toUpperCase()}
                             </p>
                           </div>
-                        </th>
-                        <td className="px-6 py-4 align-top">
+
+                          </div>
+                        </div>
+                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
                           ₹{transaction.price.toLocaleString("en-IN")}
-                        </td>
-                        <td className="px-6 py-4 align-top">
+                        </div>
+                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
                           {Number.isInteger(transaction.quantity)
                             ? Math.abs(transaction.quantity)
                             : formatFloat(transaction.quantity, 3)}
                           {transaction.symbol.toUpperCase()}
-                        </td>
-                        <td className="px-6 py-4 align-top">
+                        </div>
+                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
                           <p className="font-medium">
                             {Number.isInteger(totalValue)
                               ? transaction.quantity > 0
@@ -151,20 +160,24 @@ const transactions = () => {
                               : formatFloat(totalValue, 2)}
                             INR
                           </p>
-                        </td>
-                        <td className="px-6 py-4 align-top">
+                        </div>
+                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
                           {transaction.quantity > 0 ?
-                          <p>Bought {formatDateTime(1, transaction.txn_timestamp)}</p>:
-                          <p>Sold {formatDateTime(1, transaction.txn_timestamp)}</p>
+                          <p><span className="font-medium">Bought</span> {formatDateTime(1, transaction.txn_timestamp)}</p>:
+                          <p><span className="font-medium">Sold</span> {formatDateTime(1, transaction.txn_timestamp)}</p>
                           }
-                          <p>{formatDateTime(2, transaction.txn_timestamp)}</p>
-                        </td>
-                      </tr>
+                          <p className="text-zinc-400 whitespace-nowrap">{formatDateTime(2, transaction.txn_timestamp)}</p>
+                        </div>
+                      </div>
                     );
                   })}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
+          </>
+          ):
+          <h3 className="my-6 text-zinc-200">No transactions yet.</h3>
+          }
         </div>
       )}
     </>

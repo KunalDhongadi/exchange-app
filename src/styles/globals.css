@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 
+ 
+
 body{
-    background-color: rgb(17, 17, 17);
-} */
+    background-color: #272729;
+} 
+
+
 
 /* .modal {
     position: fixed;

@@ -66,11 +66,12 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
 
   let length = tokenData.length;
 
-  const baseColor = "#0D9488"; // The base color
+  const baseColor = "#ECFCCB"; // The base color
   const numSteps = length; // The number of steps to generate
-  const colors = chroma
-    .scale([baseColor, chroma(baseColor).brighten(2)])
+  let colors = chroma
+    .scale([baseColor, chroma(baseColor).saturate(2)])
     .colors(numSteps);
+  colors = colors.reverse();
 
   const renderColorfulLegendText = (value, entry) => {
     return <span className="text-gray-500 ms-3">{value}</span>;
@@ -84,15 +85,15 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
       const percent = ((value / total) * 100).toFixed(1);
       
       return (
-        <div className="custom-tooltip bg-white p-3 border-2 border-gray-200 rounded-md">
-          <div className="percentage flex items-center">
+        <div className="custom-tooltip bg-zinc-800 p-3 border border-zinc-200 rounded-md">
+          <div className="percentage text-white flex items-center">
             <div
               className="h-3 w-3 rounded-full me-1"
               style={{ backgroundColor: color }}
             ></div>
             <p className="text-sm font-medium">{percent}%</p>
           </div>
-          <p className="coin text-sm font-medium">{payload[0].payload.name}<span className="text-gray-400 ms-1">{(payload[0].payload.symbol).toUpperCase()}</span></p>
+          <p className="coin text-sm text-white font-medium">{payload[0].payload.name}<span className="text-gray-400 ms-1">{(payload[0].payload.symbol).toUpperCase()}</span></p>
           <p className="quantity text-sm font-medium text-gray-400">{formatFloat(payload[0].payload.quantity,3)}{(payload[0].payload.symbol).toUpperCase()} / {formatFloat(value)}INR</p>
         </div>
       );
@@ -120,6 +121,7 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
           startAngle={90}
           endAngle={-360}
           minAngle={2}
+          paddingAngle={2}
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
           onMouseEnter={onPieEnter}
@@ -129,6 +131,7 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
             <Cell
               key={`cell-${index}`}
               fill={colors[index]}
+              stroke="#27272A"
             />
           ))}
         </Pie>

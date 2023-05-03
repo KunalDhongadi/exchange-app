@@ -31,9 +31,10 @@ const UserAuthModal = () => {
         closable="true"
         popup={true}
         onClose={onClose}
+        className='bg-zinc-900 border border-zinc-600'
     >
-    <Modal.Header />
-    <Modal.Body>
+    <Modal.Header className='bg-zinc-800'/>
+    <Modal.Body className='bg-zinc-800'>
       {isLogin ? <Login/> : <Signup/>}
     </Modal.Body>
   </Modal>

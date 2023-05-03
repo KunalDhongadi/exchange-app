@@ -229,15 +229,18 @@ const Explore = () => {
     console.log("------fetchTokens useEffect in explore page-------");
   }, []);
 
+
+  let justBtn = "px-5 py-2 rounded-full font-medium text-sm focus:outline-none text-center";
+
   let selectedBtnClass =
-    "focus:outline-none font-medium text-sm text-teal-600 px-5 py-2 text-center mr-2 border-b-2 border-teal-600";
+    justBtn + " text-lime-100 mr-2 border border-lime-100";
 
   let unselectedBtnClass =
-    "text-gray-600 hover:text-teal-600 focus:outline-none font-medium text-sm px-5 py-2 text-center mr-2";
+    justBtn + " text-zinc-600 hover:text-zinc-200 mr-2";
 
   return (
     <TokenContext.Provider value={{ tokens, setTokens }}>
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 pt-2 mb-2 bg-teal-50">
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
         {userData &&
           (allTokens ? (
             <div className="">

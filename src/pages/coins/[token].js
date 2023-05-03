@@ -202,10 +202,9 @@ const Token = () => {
   }, [quantity, totalValue]);
 
   useEffect(() => {
-
     //Check if token quantity is less/equal than available tokens
     let coinQuantity = 0;
-    
+
     if (activeDetails) {
       coinQuantity = activeDetails.quantity;
     }
@@ -287,7 +286,7 @@ const Token = () => {
     setQuantity(quantityCount);
 
     let totalValueCount =
-      (quantityCount) * tokenDetails.market_data.current_price.inr;
+      quantityCount * tokenDetails.market_data.current_price.inr;
     if (!quantityCount) {
       setTotalValue(0);
     } else {
@@ -302,10 +301,7 @@ const Token = () => {
       setQuantity(0);
     } else {
       setQuantity(
-        Number(
-          (totalValueCount) /
-            tokenDetails.market_data.current_price.inr
-        )
+        Number(totalValueCount / tokenDetails.market_data.current_price.inr)
       );
     }
   };
@@ -420,16 +416,15 @@ const Token = () => {
           activeDetails.quantity * activeDetails.averageCost - totalValue;
 
         // if quantity is zero, so the user doesn't own any coins
-        if(newQuantity === 0){
+        if (newQuantity === 0) {
           setActiveDetails(null);
-        }else{
+        } else {
           setActiveDetails({
             ...activeDetails,
             quantity: newQuantity,
             averageCost: newInvestedValue / newQuantity,
           });
         }
-        
 
         setReturnPercentage(
           ((tokenDetails.market_data.current_price.inr -
@@ -528,36 +523,24 @@ const Token = () => {
 
   return (
     <>
-      <div className="">
+      <div className="text-white">
         <nav
-          className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 px-5 py-2 text-gray-700 border border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+          className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 text-zinc-400"
           aria-label="Breadcrumb"
         >
-          <ol className="container inline-flex items-center space-x-1 md:space-x-3">
+          <ol className="flex items-center space-x-1 md:space-x-3 border-b py-2 border-zinc-600">
             <li className="inline-flex items-center">
               <Link
                 href="/explore"
-                className="inline-flex items-center text-xs font-medium text-gray-700 hover:text-teal-600 dark:text-gray-400 dark:hover:text-white"
+                className="inline-flex items-center text-xs font-medium hover:text-teal-600 dark:text-zinc-400 dark:hover:text-white"
               >
                 Explore
               </Link>
             </li>
             <li>
               <div className="flex items-center">
-                <svg
-                  aria-hidden="true"
-                  className="w-6 h-6 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <p className="ml-1 text-xs font-medium text-gray-700 md:ml-2 dark:text-gray-400 dark:hover:text-white">
+                <p>/</p>
+                <p className="ml-1 text-xs font-medium md:ml-2 dark:text-zinc-400 dark:hover:text-white">
                   {tokenDetails.name}
                 </p>
               </div>
@@ -565,61 +548,68 @@ const Token = () => {
           </ol>
         </nav>
         <div className="max-w-7xl px-2 sm:px-6 lg:px-8 py-2 my-3 mx-auto flex flex-wrap items-start justify-between">
-          <div className="lg:w-3/5 md:w-3/5 md:pr-16 lg:pr-0 pr-0">
-            <div className="flex items-center">
-              <img
-                className="w-14 h-14 rounded-full"
-                src={tokenDetails.image.large}
-                alt="Rounded avatar"
-              />
-              {userData && (
-                <div className="">
-                  <WatchList
-                    token_id={tokenDetails.id}
-                    isWatchlisted={tokenDetails.iswatchlisted}
-                    isTokenPage={true}
-                  />
+          <div className="lg:w-4/6 md:w-3/5 md:pr-8 lg:pr-8 pr-0">
+            <div className="flex justify-between flex-row">
+              <div className="flex items-center">
+                <img
+                  className="w-20 h-20 rounded-full"
+                  src={tokenDetails.image.large}
+                  alt="Rounded avatar"
+                />
+              </div>
+
+              <div className="flex flex-col grow lg:flex-row lg:justify-between lg:items-center">
+                <div className="flex">
+                  <div className="flex items-baseline">
+                    <h1 className="font-medium text-2xl">
+                      {tokenDetails.name}
+                    </h1>
+                    <p className="ps-2 text-zinc-400">{tokenDetails.symbol.toUpperCase()}</p>
+                  </div>
+                  {userData && (
+                    <div className="ms-4">
+                      <WatchList
+                        token_id={tokenDetails.id}
+                        isWatchlisted={tokenDetails.iswatchlisted}
+                        isTokenPage={true}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <div className="flex items-baseline">
-              <h1 className="font-medium text-2xl">{tokenDetails.name}</h1>
-              <p className="ps-2">{tokenDetails.symbol.toUpperCase()}</p>
-            </div>
-
-            <div className="flex items-center">
-              <h1 className="font-medium text-3xl">
-                ₹
-                {tokenDetails.market_data.current_price.inr.toLocaleString(
-                  "en-IN"
-                )}
-              </h1>
-              {tokenDetails.market_data.price_change_percentage_24h >= 0 ? (
-                <p className="ms-2 px-4 rounded-full bg-green-300">
-                  {tokenDetails.market_data.price_change_percentage_24h.toFixed(
-                    2
+                <div className="flex items-center">
+                  <h1 className="font-medium me-2 text-3xl">
+                    ₹
+                    {tokenDetails.market_data.current_price.inr.toLocaleString(
+                      "en-IN"
+                    )}
+                  </h1>
+                  {tokenDetails.market_data.price_change_percentage_24h >= 0 ? (
+                    <p className="ms-2 px-4 rounded-full border border-green-400 text-green-400">
+                      {tokenDetails.market_data.price_change_percentage_24h.toFixed(
+                        2
+                      )}
+                      %
+                    </p>
+                  ) : (
+                    <p className="ms-2 px-4 rounded-full border border-red-400 text-red-400">
+                      {tokenDetails.market_data.price_change_percentage_24h.toFixed(
+                        2
+                      )}
+                      %
+                    </p>
                   )}
-                  %
-                </p>
-              ) : (
-                <p className="ms-2 px-4 rounded-full bg-red-300">
-                  {tokenDetails.market_data.price_change_percentage_24h.toFixed(
-                    2
-                  )}
-                  %
-                </p>
-              )}
+                </div>
+              </div>
             </div>
 
             {activeDetails && activeDetails.length !== 0 && (
-              <div className="bg-teal-50 rounded-lg p-4 my-3">
-                <h3 className="text-md font-medium mb-2">Summary</h3>
+              <div className="bg-zinc-800 border border-zinc-600 rounded-lg my-3">
+                <h3 className="text-md text-zinc-400 font-medium p-4 border-b border-zinc-600">Summary</h3>
 
-                <div className="flex gap-3">
-                  <div className="basis-1/2  border border-teal-400 p-2 rounded-md">
-                    <p className="text-sm">Available Qty.</p>
-                    <p className="font-medium">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-600 p-3">
+                    <p className="text-sm text-zinc-400">Available Qty.</p>
+                    <p className="font-medium text-lg">
                       {parseFloat(activeDetails.quantity.toFixed(5))}{" "}
                       {tokenDetails.symbol.toUpperCase()}
                     </p>
@@ -642,9 +632,9 @@ const Token = () => {
                     </p>
                   </div>
 
-                  <div className="basis-1/2 border border-teal-400 p-2 rounded-md">
-                    <p className="text-sm">Invested value</p>
-                    <p className="font-medium">
+                  <div className="basis-1/2  p-3">
+                    <p className="text-sm text-zinc-400">Invested value</p>
+                    <p className="font-medium text-lg">
                       {formatFloat(
                         activeDetails.quantity * activeDetails.averageCost,
                         2
@@ -652,7 +642,7 @@ const Token = () => {
                       INR
                     </p>
                     <p className="text-sm">
-                      Avg Price
+                      Avg Price-
                       <span>
                         {formatFloat(activeDetails.averageCost, 2)}INR
                       </span>
@@ -663,10 +653,10 @@ const Token = () => {
             )}
 
             <div className="mt-5">
-              <p className="font-medium text-lg">Market Data</p>
+              <p className="font-medium text-zinc-400 text-lg mb-2">Market Data</p>
               <div className="flex gap-4">
-                <div className="grow border-r-2 border-gray-100">
-                  <p className="text-sm text-gray-500">Market Cap</p>
+                <div className="grow border-r-2 border-zinc-400">
+                  <p className="text-sm text-zinc-400">Market Cap</p>
                   <p>
                     ₹
                     {tokenDetails.market_data.market_cap.inr.toLocaleString(
@@ -675,7 +665,7 @@ const Token = () => {
                   </p>
                 </div>
                 <div className="grow">
-                  <p className="text-sm text-gray-500">Total Volume</p>
+                  <p className="text-sm text-zinc-400">Total Volume</p>
                   <p>
                     ₹
                     {tokenDetails.market_data.total_volume.inr.toLocaleString(
@@ -687,10 +677,10 @@ const Token = () => {
             </div>
 
             <div className="mt-5">
-              <p className="font-medium text-lg">Additional Details</p>
+              <p className="font-medium text-lg text-zinc-400 mb-2">Additional Details</p>
 
-              <div>
-                <p className="text-sm text-gray-500">Official Website</p>
+              <div className="mb-2">
+                <p className="text-sm text-zinc-400">Official Website</p>
                 <a
                   href={tokenDetails.links.homepage[0]}
                   className="hover:underline"
@@ -699,11 +689,12 @@ const Token = () => {
                 </a>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Description</p>
+                <p className="text-sm text-zinc-400">Description</p>
                 {tokenDetails.description.en === "" ? (
                   <p>N.A</p>
                 ) : (
                   <p
+                    className="mb-3"
                     dangerouslySetInnerHTML={{
                       __html: tokenDetails.description.en,
                     }}
@@ -714,19 +705,19 @@ const Token = () => {
           </div>
 
           <div className="lg:w-2/6 md:w-2/5 w-full">
-            <div className="bg-gray-100 rounded-lg border-2 border-teal-600 px-6 py-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
-              <div className="flex mb-4">
+            <div className="bg-zinc-800 border border-zinc-600 rounded-xl text-zinc-200 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+              <div className="flex py-6 px-4 font-medium border-b border-zinc-600">
                 <button
-                  className={`flex-1 text-center py-2 border-b-2 ${
-                    isBuy && "border-gray-500"
+                  className={`flex-1 text-center rounded-full py-2 border ${
+                    isBuy ? " border-lime-200 text-lime-200" : " border-transparent text-zinc-400"
                   }`}
                   onClick={buySellBtn}
                 >
                   Buy
                 </button>
                 <button
-                  className={`flex-1 text-center py-2 border-b-2 ${
-                    !isBuy && "border-gray-500"
+                  className={`flex-1 text-center rounded-full py-2 border ${
+                    !isBuy ? " border border-lime-200 text-lime-200" : " border-transparent text-zinc-400"
                   }`}
                   onClick={buySellBtn}
                 >
@@ -735,43 +726,44 @@ const Token = () => {
               </div>
 
               <form>
-                <div className="mb-6">
+                <div className="p-4 py-5">
                   <label
                     htmlFor="quantity"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm text-zinc-200"
                   >
                     Enter Quantity
                   </label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                  <div className="flex bg-zinc-800 rounded-lg border border-zinc-600 focus-within:border-lime-200">
+                    <span className="inline-flex items-center px-3 m-1.5 my-2 text-sm font-medium text-zinc-200  border-r border-zinc-600">
                       {tokenDetails.symbol.toUpperCase()}
                     </span>
                     <input
                       type="number"
                       id="quantity"
-                      className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="rounded-r-lg bg-inherit border-0 text-zinc-100 focus:ring-0 group block flex-1 min-w-0 w-full text-sm p-3"
                       placeholder="0.0"
                       min="0"
+
                       value={quantity ? parseFloat(quantity.toFixed(3)) : ""}
                       onChange={onQuantityChanged}
                     />
                   </div>
                 </div>
-                <div className="mb-4">
+                <div className="py-3 pt-0 px-4">
                   <label
                     htmlFor="totalValue"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm text-zinc-200"
                   >
                     Total Value
                   </label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                  <div className="flex bg-zinc-800 rounded-lg border border-zinc-600 focus-within:border-lime-200">
+                    <span className="inline-flex items-center px-3 m-1.5 my-2 text-sm font-medium text-zinc-200  border-r border-zinc-600">
                       INR
                     </span>
                     <input
                       type="number"
                       id="totalValue"
-                      className="rounded-none rounded-r-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="rounded-r-lg bg-inherit border-0 text-zinc-100 focus:ring-0 group block flex-1 min-w-0 w-full text-sm p-3"
                       placeholder="0.0"
                       min="0"
                       value={
@@ -785,29 +777,33 @@ const Token = () => {
                 {userData ? (
                   isBuy ? (
                     <>
+                      <div className="px-4 text-zinc-400 flex justify-between text-sm">
+                        <p className="mb-2">INR Balance</p>
+                        <p>₹{userData.cash && formatFloat(userData.cash, 2)}</p>
+                      </div>
                       {buyError && (
                         <div
-                          className="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+                          className="mt-0 p-4 pb-0 text-sm text-yellow-100 rounded-lg"
                           role="alert"
                         >
                           <span className="font-medium"></span> {buyError}
                         </div>
                       )}
-                      <div className="flex justify-between text-sm">
-                        <p className="mb-2">INR Balance</p>
-                        <p>₹{userData.cash && formatFloat(userData.cash, 2)}</p>
-                      </div>
+
+                      <div className="p-4 py-6">
                       <button
                         type="button"
-                        className="text-white bg-teal-600 w-full hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        className="w-full rounded-lg text-zinc-800 bg-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
                         onClick={openModal}
                       >
                         Buy
                       </button>
+                      </div>
+                      
                     </>
                   ) : (
                     <>
-                      <div className="flex justify-between text-sm">
+                      <div className="px-4 text-zinc-400 flex justify-between text-sm">
                         <p className="mb-2">
                           {tokenDetails.symbol.toUpperCase()} Balance
                         </p>
@@ -818,23 +814,28 @@ const Token = () => {
                           {tokenDetails.symbol.toUpperCase()}
                         </p>
                       </div>
+                      <div className="p-4 py-6">
                       <button
                         type="button"
-                        className="text-white bg-teal-600 w-full hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        className="w-full rounded-lg bg-lime-200 text-zinc-900 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
                         onClick={openModal}
                       >
                         Sell
                       </button>
+
+                      </div>
                     </>
                   )
                 ) : (
+                  <div className="p-4 py-6">
                   <button
                     type="button"
-                    className="text-white bg-teal-600 w-full hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    className="text-zinc-800 bg-lime-200 w-full focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                     onClick={onNonUserLoginBtnClick}
                   >
                     Login to buy/sell {tokenDetails.symbol.toUpperCase()}
                   </button>
+                  </div>
                 )}
               </form>
             </div>
@@ -842,55 +843,56 @@ const Token = () => {
             {transactionDetails &&
               transactionDetails.length !== 0 &&
               transactionDetails[0] !== undefined && (
-                <div className="bg-gray-100 rounded-lg p-4 mt-3">
-                  <h3 className="text-medium font-medium mb-2">Recent Transaction</h3>
+                <div className="border border-zinc-600 rounded-lg my-4 pb-4">
+                  <h3 className="text-medium font-medium p-4 text-zinc-400 border-b border-zinc-600">
+                    Recent Transaction
+                  </h3>
 
                   {transactionDetails.map((transaction) => (
                     <div
-                      className="border-b pb-2"
+                      className="border-b border-zinc-600 p-4"
                       key={transaction.txn_timestamp}
                     >
-                      
                       <div className="flex items-center">
                         {/* <div className="w-10 flex justify-center items-center">
                           <div className="w-6 h-2 bg-slate-300 ring-offset-2 ring-2 ring-slate-300 rounded-full"></div>
                         </div> */}
                         <div className="w-full">
                           <div className="flex justify-between">
-                          <p>
-                            {transaction.quantity > 0 ? "Bought " : "Sold "}
-                            {formatFloat(Math.abs(transaction.quantity), 3)}
-                            {tokenDetails.symbol.toUpperCase()}{" "}
-                            {transaction.quantity > 0 ? (
-                              <span className="font-medium">
-                                -
-                                {formatFloat(
-                                  Math.abs(
-                                    transaction.price * transaction.quantity
-                                  ),
-                                  2
-                                )}
-                                INR
-                              </span>
-                            ) : (
-                              <span className="font-medium">
-                                +
-                                {formatFloat(
-                                  Math.abs(
-                                    transaction.price * transaction.quantity
-                                  ),
-                                  2
-                                )}
-                                INR
-                              </span>
-                            )}
-                          </p>
-                          <p className="text-sm text-gray-400">
-                          {formatTime(transaction.txn_timestamp)}
-                        </p>
+                            <p>
+                              {transaction.quantity > 0 ? "Bought " : "Sold "}
+                              {formatFloat(Math.abs(transaction.quantity), 3)}
+                              {tokenDetails.symbol.toUpperCase()}{" "}
+                              {transaction.quantity > 0 ? (
+                                <span className="font-medium">
+                                  -
+                                  {formatFloat(
+                                    Math.abs(
+                                      transaction.price * transaction.quantity
+                                    ),
+                                    2
+                                  )}
+                                  INR
+                                </span>
+                              ) : (
+                                <span className="font-medium">
+                                  +
+                                  {formatFloat(
+                                    Math.abs(
+                                      transaction.price * transaction.quantity
+                                    ),
+                                    2
+                                  )}
+                                  INR
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-sm text-zinc-400">
+                              {formatTime(transaction.txn_timestamp)}
+                            </p>
                           </div>
-                          
-                          <p className="text-sm">
+
+                          <p className="text-sm text-zinc-300">
                             (@{formatFloat(transaction.price, 2)}INR)
                           </p>
                         </div>
@@ -911,9 +913,10 @@ const Token = () => {
           size="md"
           dismissible={true}
           onClose={onModalClose}
+          className="bg-zinc-900"
         >
-          <Modal.Header>Confirm Order</Modal.Header>
-          <Modal.Body>
+          <Modal.Header className="bg-zinc-800 border dark:border-zinc-600">Confirm Order</Modal.Header>
+          <Modal.Body className="bg-zinc-800 text-zinc-200 border-x dark:border-zinc-600">
             <div className="space-y-2">
               <p className="text-md font-medium">
                 {isBuy
@@ -945,12 +948,12 @@ const Token = () => {
               </div>
             </div>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className="bg-zinc-800 border dark:border-zinc-600">
             <button
               data-modal-hide="confirm-modal"
               type="button"
               onClick={onConfirmationClick}
-              className="text-white bg-teal-600 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
+              className="text-zinc-900 bg-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full"
             >
               {isBuy ? "Buy" : "Sell"}
             </button>
@@ -961,7 +964,7 @@ const Token = () => {
       {showToast && (
         <div
           id="toast-success"
-          className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+          className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-zinc-400 rounded-lg shadow bg-zinc-800"
           role="alert"
         >
           <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">

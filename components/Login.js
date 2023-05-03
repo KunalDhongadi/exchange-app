@@ -52,27 +52,27 @@ const Login = () => {
   return (
     <>
     <div className="relative w-full h-full max-w-md md:h-auto">
-        <div className="relative bg-white rounded-lg">
+        <div className="relative rounded-lg">
             <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">Login</h3>
             <form className="space-y-6" method='POST' onSubmit={loginBtn}>
                 {error && 
-                    <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                    <div className="p-4 mb-4 text-sm rounded-lg border border-red-400/50 text-red-400/75" role="alert">
                         {error}
                     </div>
                 }
                 <div>
-                    <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                    <input type="text" name="username" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="name@company.com" required onChange={onUsernameChange} value={username}/>
+                    <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-zinc-200">Username</label>
+                    <input type="text" name="username" id="username" className="bg-zinc-700 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-lime-200 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-600 dark:placeholder-zinc-400 dark:text-white" placeholder="Enter your username" required onChange={onUsernameChange} value={username}/>
                 </div>
                 <div>
-                    <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-                    <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required
+                    <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-zinc-200">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Enter your password" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-blue-500 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-600 dark:placeholder-zinc-400 dark:text-white" required
                     onChange={onPasswordChange} value={password}/>
                 </div>
               
-                <button type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login to your account</button>
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
-                    Don't have an account? <a onClick={goToLogin} className="text-blue-700 hover:underline dark:text-blue-500">Create account</a>
+                <button type="submit" className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-lime-200 dark:focus:ring-lime-200">Login to your account</button>
+                <div className="text-sm font-medium text-gray-500 dark:text-zinc-400">
+                    Don't have an account? <a onClick={goToLogin} className="text-zinc-200 hover:underline dark:text-lime-200 cursor-pointer">Create account</a>
                 </div>
             </form>
         </div>

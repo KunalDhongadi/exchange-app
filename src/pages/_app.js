@@ -5,6 +5,8 @@ import UserContext from '../../context/userContext'
 import { useEffect, useState } from 'react'
 import App from 'next/app'
 import ModalContext from '../../context/modalContext'
+import { useRouter } from 'next/router'
+import LoadingBar from 'react-top-loading-bar'
 
 export default function MyApp({ Component, pageProps }) {
 
@@ -13,6 +15,13 @@ export default function MyApp({ Component, pageProps }) {
 
   const [showModal, setShowModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+
+  const [progress, setProgress] = useState(0);
+
+
+  const router = useRouter();
+
+  
 
   // const [tokenDetails, setTokenDetails] = useState([]);
 
@@ -33,8 +42,19 @@ export default function MyApp({ Component, pageProps }) {
     }
     
   }
+
+
   
   useEffect(() => {
+
+    router.events.on('routeChangeStart', () =>{
+      setProgress(20);
+    });
+
+    router.events.on('routeChangeComplete', () =>{
+      setProgress(100);
+    });
+
     setAuthtoken(localStorage.getItem("token"));
     // console.log("authtoken--",authtoken);
     fetchUser(authtoken);
@@ -47,6 +67,7 @@ export default function MyApp({ Component, pageProps }) {
     <>
     <UserContext.Provider value={{userData, setUserData, authtoken, setAuthtoken}}>
       <ModalContext.Provider value={{showModal, setShowModal, isLogin, setIsLogin}}>
+        <LoadingBar color={"#DEF7EC"} progress={progress} waitingTime={400} onLoaderFinished={()=>setProgress(0)} />
         <Navbar/>
         <Component {...pageProps} />
         <Footer/>

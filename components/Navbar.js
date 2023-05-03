@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import ModalContext from "../context/modalContext";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import LoadingBar from "react-top-loading-bar";
 
 const AuthModal = dynamic(() => import("./UserAuthModal"), { ssr: false });
 
@@ -64,13 +65,13 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gray-800">
+      <nav className="bg-zinc-800">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <div className="relative flex h-16 items-center justify-between">
+          <div className="relative flex h-16 items-center justify-between border-b-2 border-zinc-600">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700"
+                className="inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-700"
                 aria-controls="mobile-menu"
                 // aria-expanded={showMenu}
               >
@@ -117,20 +118,76 @@ const Navbar = () => {
                 </svg>
               </button>
             </div>
+
+            {userData ? (
+                  <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
+                    <button
+                      id="dropdownAvatarNameButton"
+                      data-dropdown-toggle="dropdownAvatarName"
+                      className="flex items-center border-gray-500 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md p-1 text-sm font-medium"
+                      type="button"
+                      onClick={onDropDownBtnClick}
+                      // data-dropdown-offset-skidding="0"
+                    >
+                      <span className="sr-only">Open user menu</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    <div
+                      id="dropdownAvatarName"
+                      className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+                    >
+                      <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                        <div className="font-medium ">{userData.name}</div>
+                        <div className="truncate">{userData.email}</div>
+                      </div>
+                      <ul
+                        className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                        aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
+                      >
+                        <li>
+                          <p className="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                            Deposit
+                          </p>
+                        </li>
+                      </ul>
+                      <div className="py-2">
+                        <p
+                          onClick={handleLogout}
+                          className="block cursor-pointer px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        >
+                          Sign out
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
+                    <button
+                      className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      onClick={toggleLoginModal}
+                    >
+                      Login
+                    </button>
+                  </div>
+                )}
+      
+
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex flex-shrink-0 items-center">
-                <img
-                  className="block h-8 w-auto lg:hidden"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=teal&shade=600"
-                  alt="Your Company"
-                />
                 <Link href="/explore" className="flex items-center">
-                  <img
-                    className="hidden h-8 w-auto lg:block"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=teal&shade=600"
-                    alt="Your Company"
-                  />
-                  <h1 className="ms-3 text-white font-semibold text-lg">
+                  <h1 className="text-white font-semibold text-lg">
                     Coindeck
                   </h1>
                 </Link>
@@ -139,10 +196,10 @@ const Navbar = () => {
                 <div className="flex space-x-4">
                   <Link
                     href="/explore"
-                    className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                    className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
                       pathname === "/explore"
-                        ? "bg-gray-900"
-                        : "hover:bg-gray-700"
+                        ? " text-lime-100 underline underline-offset-8"
+                        : " text-zinc-200"
                     }`}
                     aria-current={pathname === "/explore" ? "page" : undefined}
                   >
@@ -152,10 +209,10 @@ const Navbar = () => {
                     <>
                       <Link
                         href="/portfolio"
-                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                        className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
                           pathname === "/portfolio"
-                            ? "bg-gray-900"
-                            : "hover:bg-gray-700"
+                            ? " text-lime-100 underline underline-offset-8"
+                            : " text-zinc-200"
                         }`}
                         aria-current={
                           pathname === "/portfolio" ? "page" : undefined
@@ -166,10 +223,10 @@ const Navbar = () => {
 
                       <Link
                         href="/transactions"
-                        className={`text-white rounded-md px-3 py-2 text-sm font-medium ${
+                        className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
                           pathname === "/transactions"
-                            ? "bg-gray-900"
-                            : "hover:bg-gray-700"
+                            ? " text-lime-100 underline underline-offset-8"
+                            : " text-zinc-200"
                         }`}
                         aria-current={
                           pathname === "transactions" ? "page" : undefined
@@ -250,14 +307,14 @@ const Navbar = () => {
                 ) : (
                   <div className="flex space-x-4">
                     <button
-                      className="border-2 border-teal-600 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                       onClick={toggleLoginModal}
                     >
                       Login
                     </button>
 
                     <button
-                      className="bg-teal-600 text-white hover:bg-teal-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      className="bg-lime-200 text-lime-900 rounded-md px-3 py-2 text-sm font-medium"
                       onClick={toggleSignupModal}
                     >
                       Signup
@@ -273,53 +330,55 @@ const Navbar = () => {
           className={`${showMenu ? "block" : "hidden"} sm:hidden`}
           id="mobile-menu"
         >
-          <div className={`space-y-1 px-2 pb-3 pt-2`}>
+          <div className={`space-y-1 mx-2 pb-3 pt-2 border-b-2 border-zinc-600`}>
             <Link
               href="/explore"
-              className="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium"
+              className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+                pathname === "/explore"
+                  ? " text-lime-100 underline underline-offset-8"
+                  : " text-zinc-200"
+              }`}
               aria-current="page"
             >
               Explore
             </Link>
 
-            {userData ? (
+            {userData && (
               <>
                 <Link
                   href="/portfolio"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+                  className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+                    pathname === "/portfolio"
+                      ? " text-lime-100 underline underline-offset-8"
+                      : " text-zinc-200"
+                  }`}
                 >
                   Portfolio
                 </Link>
 
                 <Link
                   href="/transactions"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+                  className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+                    pathname === "/transactions"
+                      ? " text-lime-100 underline underline-offset-8"
+                      : " text-zinc-200"
+                  }`}
                 >
                   Transactions
                 </Link>
               </>
-            ) : (
-              <>
-                <div className="border-t border-slate-700">
-                  <button
-                    className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 mt-2 font-medium w-full"
-                    onClick={toggleLoginModal}
-                  >
-                    Login
-                  </button>
-
-                  <button
-                    className="bg-teal-600 text-white hover:bg-teal-700 hover:text-white rounded-md px-3 py-2 mt-2 font-medium w-full"
-                    onClick={toggleSignupModal}
-                  >
-                    Signup
-                  </button>
-                </div>
-              </>
             )}
           </div>
         </div>
+
+
+        
+
+
+      {/* <LoadingBar color={"#DEF7EC"} progress={20} style={{maxWidth:"80rem"}}/> */}
+        
       </nav>
+
 
       <AuthModal />
     </>
