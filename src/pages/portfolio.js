@@ -20,74 +20,74 @@ const Portfolio = () => {
   });
 
   const fetchActive = async () => {
-    // const response = await fetch(
-    //   `http://localhost:5000/api/exchange/fetchactive`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "auth-token": localStorage.getItem("token"),
-    //     },
-    //   }
-    // );
-    // const data = await response.json();
+    const response = await fetch(
+      `http://localhost:5000/api/exchange/fetchactive`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      }
+    );
+    const data = await response.json();
 
-    const data = {
-      portfolioValue: 924055.6067749885,
-      totalInvested: 10826.483972810098,
-      totalReturns: 913229.1228021784,
-      returnsPercentage: 8435.140393646587,
-      tokens: [
-        {
-          _id: "6431dc443083ae60bfc1d2fd",
-          user: "6429cc3c4fa30ad8f762889f",
-          symbol: "xrp",
-          name: "XRP",
-          token_id: "ripple",
-          quantity: 48.30999215850304,
-          image_url:
-            "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png?1605778731",
-          __v: 0,
-          averageCost: 1.7147591274327982,
-          price: {
-            inr: 42.34,
-            inr_24h_change: 0.6133565647028864,
-          },
-        },
-        {
-          _id: "6431ddfcb303dab0a17f1ad2",
-          user: "6429cc3c4fa30ad8f762889f",
-          symbol: "usdt",
-          name: "Tether",
-          token_id: "tether",
-          quantity: 5,
-          image_url:
-            "https://assets.coingecko.com/coins/images/325/small/Tether.png?1668148663",
-          __v: 0,
-          averageCost: 16.384,
-          price: {
-            inr: 82.14,
-            inr_24h_change: 0.1565971715227986,
-          },
-        },
-        {
-          _id: "643357078117d3902570c339",
-          user: "6429cc3c4fa30ad8f762889f",
-          symbol: "eth",
-          name: "Ethereum",
-          token_id: "ethereum",
-          quantity: 5.920022236756046,
-          image_url:
-            "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
-          __v: 0,
-          averageCost: 1800.9601225167573,
-          price: {
-            inr: 155675,
-            inr_24h_change: 0.39670341771563083,
-          },
-        },
-      ],
-    };
+    // const data = {
+    //   portfolioValue: 924055.6067749885,
+    //   totalInvested: 10826.483972810098,
+    //   totalReturns: 913229.1228021784,
+    //   returnsPercentage: 8435.140393646587,
+    //   tokens: [
+    //     {
+    //       _id: "6431dc443083ae60bfc1d2fd",
+    //       user: "6429cc3c4fa30ad8f762889f",
+    //       symbol: "xrp",
+    //       name: "XRP",
+    //       token_id: "ripple",
+    //       quantity: 48.30999215850304,
+    //       image_url:
+    //         "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png?1605778731",
+    //       __v: 0,
+    //       averageCost: 1.7147591274327982,
+    //       price: {
+    //         inr: 42.34,
+    //         inr_24h_change: 0.6133565647028864,
+    //       },
+    //     },
+    //     {
+    //       _id: "6431ddfcb303dab0a17f1ad2",
+    //       user: "6429cc3c4fa30ad8f762889f",
+    //       symbol: "usdt",
+    //       name: "Tether",
+    //       token_id: "tether",
+    //       quantity: 5,
+    //       image_url:
+    //         "https://assets.coingecko.com/coins/images/325/small/Tether.png?1668148663",
+    //       __v: 0,
+    //       averageCost: 16.384,
+    //       price: {
+    //         inr: 82.14,
+    //         inr_24h_change: 0.1565971715227986,
+    //       },
+    //     },
+    //     {
+    //       _id: "643357078117d3902570c339",
+    //       user: "6429cc3c4fa30ad8f762889f",
+    //       symbol: "eth",
+    //       name: "Ethereum",
+    //       token_id: "ethereum",
+    //       quantity: 5.920022236756046,
+    //       image_url:
+    //         "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+    //       __v: 0,
+    //       averageCost: 1800.9601225167573,
+    //       price: {
+    //         inr: 155675,
+    //         inr_24h_change: 0.39670341771563083,
+    //       },
+    //     },
+    //   ],
+    // };
     setTokens(data.tokens);
     const { portfolioValue, totalInvested, totalReturns, returnsPercentage } =
       data;
@@ -106,7 +106,7 @@ const Portfolio = () => {
     } else {
       fetchActive();
     }
-  }, []);
+  }, [userData]);
 
   const formatFloat = (number, toFixedN) => {
     return parseFloat(number.toFixed(toFixedN)).toLocaleString("en-IN");
@@ -118,7 +118,7 @@ const Portfolio = () => {
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
             <div className="w-full flex flex-col md:flex-row gap-3 my-4">
-              <div className="w-full h-24 flex p-3 rounded-lg bg-lime-100">
+              <div className="w-full h-24 flex p-3 rounded-lg bg-lime-200">
                 <div className="flex-row self-center">
                   <p className="text-xs font-medium text-zinc-700">
                     Current Value
@@ -129,7 +129,7 @@ const Portfolio = () => {
                 </div>
               </div>
 
-              <div className="w-full h-24 flex p-3 rounded-lg bg-lime-100">
+              <div className="w-full h-24 flex p-3 rounded-lg bg-lime-200">
                 <div className="flex-row self-center">
                   <p className="text-xs font-medium text-zinc-700">
                     Total Returns
@@ -159,7 +159,7 @@ const Portfolio = () => {
                 </div>
               </div>
 
-              <div className="w-full h-24 flex flex-col justify-center p-3 rounded-lg bg-lime-100">
+              <div className="w-full h-24 flex flex-col justify-center p-3 rounded-lg bg-lime-200">
                 <div className="flex justify-between items-center">
                   <p className="text-xs font-medium text-zinc-700">
                     Invested Value (INR)
@@ -263,22 +263,22 @@ const Portfolio = () => {
                           </div>
                           <div
                             className={`table-cell border-b border-zinc-600 p-4 font-medium ${
-                              details.totalReturns > 0
+                              totalReturns > 0
                                 ? "text-green-300"
-                                : "text-red-200"
+                                : "text-red-400"
                             }`}
                           >
-                            ₹{formatFloat(totalReturns, 2)}
+                            ₹{formatFloat(Math.abs(totalReturns), 2)}
                             <span
                               className={`text-xs font-medium px-3 py-1 ms-2 rounded-full ${
                                 returnsPercentage > 0
-                                  ? "bg-green-300 text-green-950"
-                                  : "bg-red-400 text-red-950"
+                                  ? "border border-green-300 text-green-300"
+                                  : "border border-red-400 text-red-400"
                               }`}
                             >
                               {returnsPercentage > 0
                                 ? "+" + formatFloat(returnsPercentage, 2)
-                                : "-" + formatFloat(returnsPercentage, 2)}
+                                : "" + formatFloat(returnsPercentage, 2)}
                               %
                             </span>
                           </div>

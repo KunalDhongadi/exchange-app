@@ -7,9 +7,10 @@ const transactions = () => {
   const { userData, setUserData } = useContext(UserContext);
 
   const [transactions, setTransactions] = useState();
+  const [fetched, setfetched] = useState(false);
 
   const router = useRouter();
-
+  
   const fetchtransactions = async () => {
     const response = await fetch(
       `http://localhost:5000/api/exchange/fetchtransactions`,
@@ -27,19 +28,22 @@ const transactions = () => {
 
   // console.log("user txn", userData);
 
-  // useEffect(() => {
-  //   if (!userData) {
-  //     router.push("/explore");
-  //   } else {
-  //     console.log("useEffect for getting transactions page");
-  //     fetchtransactions();
-  //   }
-  // }, [userData]);
-
   useEffect(() => {
+    if (!userData) {
+      router.push("/explore");
+    } else {
       console.log("useEffect for getting transactions page");
       fetchtransactions();
+    }
   }, [userData]);
+
+  useEffect(() => {
+      if(!fetched){
+        console.log("useEffect for getting transactions page");
+        fetchtransactions();
+        setfetched(true);
+      }
+  }, []);
 
   // console.log("transactions", transactions);
 
@@ -157,7 +161,8 @@ const transactions = () => {
                                 : `+${totalValue * -1}`
                               : transaction.quantity > 0
                               ? `-${formatFloat(totalValue, 2)}`
-                              : formatFloat(totalValue, 2)}
+                              : `+${formatFloat(totalValue * -1, 2)}`
+                              }
                             INR
                           </p>
                         </div>
@@ -183,5 +188,7 @@ const transactions = () => {
     </>
   );
 };
+
+
 
 export default transactions;

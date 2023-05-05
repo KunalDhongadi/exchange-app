@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import UserContext from "../context/userContext";
 import dynamic from "next/dynamic";
 import ModalContext from "../context/modalContext";
@@ -15,15 +15,17 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   console.log("useEffect- get user from context navbar.js");
-  // }, []);
+    console.log("useEffect- navbar.js");
+  }, []);
 
   // console.log("user", userData);
 
   const { showModal, setShowModal, isLogin, setIsLogin } =
     useContext(ModalContext);
+
+  const menuRef = useRef();
 
   const toggleLoginModal = () => {
     setShowModal(true);
@@ -52,6 +54,7 @@ const Navbar = () => {
   // }
 
   const onMenuExpand = () => {
+    console.log("menu clicked");
     setShowMenu(true);
   };
 
@@ -59,9 +62,25 @@ const Navbar = () => {
     setShowMenu(false);
   };
 
-  const onDropDownBtnClick = () => {
+  const onDropDownBtnClick = (e) => {
+    e.stopPropagation();
+    // console.log("dropdown clicked");
     setShowDropdown(!showDropdown);
   };
+
+  //useEffect to basically close the dropdown when clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target) && setShowDropdown) {
+        // console.log("clicked outside");
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -120,85 +139,96 @@ const Navbar = () => {
             </div>
 
             {userData ? (
-                  <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
-                    <button
-                      id="dropdownAvatarNameButton"
-                      data-dropdown-toggle="dropdownAvatarName"
-                      className="flex items-center border-gray-500 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md p-1 text-sm font-medium"
-                      type="button"
-                      onClick={onDropDownBtnClick}
-                      // data-dropdown-offset-skidding="0"
-                    >
-                      <span className="sr-only">Open user menu</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+              <div
+                className={`absolute inset-y-0 right-0 items-center sm:hidden flex`}
+              >
+                <button
+                  id="dropdownAvatarNameButton"
+                  className={`flex items-center border-gray-500 text-gray-300 hover:bg-zinc-700 hover:text-white rounded-md p-2 text-sm font-medium ${showDropdown ? "bg-zinc-700" : "bg-inherit"}`}
+                  type="button"
+                  onClick={onDropDownBtnClick}
+                  // data-dropdown-offset-skidding="0"
+                >
+                  <span className="sr-only">Open user menu</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
+                <button
+                  className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                  onClick={toggleLoginModal}
+                >
+                  Login
+                </button>
+              </div>
+            )}
 
-                    <div
-                      id="dropdownAvatarName"
-                      className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                    >
-                      <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                        <div className="font-medium ">{userData.name}</div>
-                        <div className="truncate">{userData.email}</div>
-                      </div>
-                      <ul
-                        className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
-                      >
-                        <li>
-                          <p className="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                            Deposit
-                          </p>
-                        </li>
-                      </ul>
-                      <div className="py-2">
-                        <p
-                          onClick={handleLogout}
-                          className="block cursor-pointer px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                        >
-                          Sign out
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
-                    <button
-                      className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                      onClick={toggleLoginModal}
-                    >
-                      Login
-                    </button>
-                  </div>
-                )}
-      
+            {/* the dropdown menu */}
+
+            {userData && 
+            <div
+              ref={menuRef}
+              id="dropdownAvatarName1"
+              className={`z-10 ${
+                showDropdown ? "block" : "hidden"
+              } absolute top-16 right-0 bg-white divide-y divide-zinc-200 rounded-lg shadow-2xl shadow-zinc-900 w-52 dark:bg-zinc-750 dark:divide-zinc-600`}
+            >
+              <div className="p-5 text-sm text-white">
+                <div className="font-medium text-base">{userData.name}</div>
+                <div className="truncate text-zinc-300">{userData.email}</div>
+              </div>
+
+              <div className="pt-3 text-sm m-5 mt-0 border-t border-zinc-600 text-white">
+                <div className="text-zinc-300">INR Balance</div>
+                <div className="font-medium text-white">₹{userData.cash.toFixed(1)}</div>
+              </div>
+
+              <ul
+                className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
+              >
+                <li>
+                  <p className="block cursor-not-allowed px-4 py-2 text-zinc-400">
+                    Deposit
+                  </p>
+                </li>
+              </ul>
+              <div className="py-2">
+                <p
+                  onClick={handleLogout}
+                  className="block cursor-pointer px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-zinc-200 dark:hover:text-white"
+                >
+                  Sign out
+                </p>
+              </div>
+            </div>
+            }
 
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex flex-shrink-0 items-center">
                 <Link href="/explore" className="flex items-center">
-                  <h1 className="text-white font-semibold text-lg">
-                    Coindeck
-                  </h1>
+                  <h1 className="text-white font-semibold text-lg">Coindeck</h1>
                 </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex justify-between w-full">
                 <div className="flex space-x-4">
                   <Link
                     href="/explore"
-                    className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
+                    className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
                       pathname === "/explore"
-                        ? " text-lime-100 underline underline-offset-8"
+                        ? " text-lime-200 underline underline-offset-8"
                         : " text-zinc-200"
                     }`}
                     aria-current={pathname === "/explore" ? "page" : undefined}
@@ -209,9 +239,9 @@ const Navbar = () => {
                     <>
                       <Link
                         href="/portfolio"
-                        className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
+                        className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
                           pathname === "/portfolio"
-                            ? " text-lime-100 underline underline-offset-8"
+                            ? " text-lime-200 underline underline-offset-8"
                             : " text-zinc-200"
                         }`}
                         aria-current={
@@ -223,9 +253,9 @@ const Navbar = () => {
 
                       <Link
                         href="/transactions"
-                        className={`rounded-md px-3 py-2 hover:text-lime-100 text-sm font-medium ${
+                        className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
                           pathname === "/transactions"
-                            ? " text-lime-100 underline underline-offset-8"
+                            ? " text-lime-200 underline underline-offset-8"
                             : " text-zinc-200"
                         }`}
                         aria-current={
@@ -242,8 +272,7 @@ const Navbar = () => {
                   <div className="flex space-x-4">
                     <button
                       id="dropdownAvatarNameButton"
-                      data-dropdown-toggle="dropdownAvatarName"
-                      className="flex items-center border-gray-500 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md p-1 text-sm font-medium"
+                      className={`flex items-center border-gray-500 text-gray-300 hover:bg-zinc-700 hover:text-white rounded-md p-2 text-sm font-medium ${showDropdown ? "bg-zinc-700" : "bg-inherit"}`}
                       type="button"
                       onClick={onDropDownBtnClick}
                       // data-dropdown-offset-skidding="0"
@@ -275,34 +304,6 @@ const Navbar = () => {
                         ></path>
                       </svg> */}
                     </button>
-
-                    <div
-                      id="dropdownAvatarName"
-                      className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                    >
-                      <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                        <div className="font-medium ">{userData.name}</div>
-                        <div className="truncate">{userData.email}</div>
-                      </div>
-                      <ul
-                        className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
-                      >
-                        <li>
-                          <p className="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                            Deposit
-                          </p>
-                        </li>
-                      </ul>
-                      <div className="py-2">
-                        <p
-                          onClick={handleLogout}
-                          className="block cursor-pointer px-4 py-2 text-sm w-100 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                        >
-                          Sign out
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 ) : (
                   <div className="flex space-x-4">
@@ -330,12 +331,14 @@ const Navbar = () => {
           className={`${showMenu ? "block" : "hidden"} sm:hidden`}
           id="mobile-menu"
         >
-          <div className={`space-y-1 mx-2 pb-3 pt-2 border-b-2 border-zinc-600`}>
+          <div
+            className={`space-y-1 mx-2 pb-3 pt-2 border-b-2 border-zinc-600`}
+          >
             <Link
               href="/explore"
-              className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+              className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
                 pathname === "/explore"
-                  ? " text-lime-100 underline underline-offset-8"
+                  ? " text-lime-200 underline underline-offset-8"
                   : " text-zinc-200"
               }`}
               aria-current="page"
@@ -347,9 +350,9 @@ const Navbar = () => {
               <>
                 <Link
                   href="/portfolio"
-                  className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+                  className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
                     pathname === "/portfolio"
-                      ? " text-lime-100 underline underline-offset-8"
+                      ? " text-lime-200 underline underline-offset-8"
                       : " text-zinc-200"
                   }`}
                 >
@@ -358,9 +361,9 @@ const Navbar = () => {
 
                 <Link
                   href="/transactions"
-                  className={`block px-3 py-2 hover:text-lime-100 text-base font-medium ${
+                  className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
                     pathname === "/transactions"
-                      ? " text-lime-100 underline underline-offset-8"
+                      ? " text-lime-200 underline underline-offset-8"
                       : " text-zinc-200"
                   }`}
                 >
@@ -371,14 +374,8 @@ const Navbar = () => {
           </div>
         </div>
 
-
-        
-
-
-      {/* <LoadingBar color={"#DEF7EC"} progress={20} style={{maxWidth:"80rem"}}/> */}
-        
+        {/* <LoadingBar color={"#DEF7EC"} progress={20} style={{maxWidth:"80rem"}}/> */}
       </nav>
-
 
       <AuthModal />
     </>

@@ -85,7 +85,7 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
       const percent = ((value / total) * 100).toFixed(1);
       
       return (
-        <div className="custom-tooltip bg-zinc-800 p-3 border border-zinc-200 rounded-md">
+        <div className="custom-tooltip bg-zinc-800/60 p-3 border border-zinc-600 backdrop-blur-2xl rounded-md">
           <div className="percentage text-white flex items-center">
             <div
               className="h-3 w-3 rounded-full me-1"
@@ -94,7 +94,7 @@ const PiechartComponent = ({portfolioValue, tokens}) => {
             <p className="text-sm font-medium">{percent}%</p>
           </div>
           <p className="coin text-sm text-white font-medium">{payload[0].payload.name}<span className="text-gray-400 ms-1">{(payload[0].payload.symbol).toUpperCase()}</span></p>
-          <p className="quantity text-sm font-medium text-gray-400">{formatFloat(payload[0].payload.quantity,3)}{(payload[0].payload.symbol).toUpperCase()} / {formatFloat(value)}INR</p>
+          <p className="quantity text-sm font-medium text-gray-300">{formatFloat(payload[0].payload.quantity,3)}{(payload[0].payload.symbol).toUpperCase()} / {formatFloat(value)}INR</p>
         </div>
       );
     }

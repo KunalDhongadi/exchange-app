@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import TokenList from "../../components/TokenList";
-import { Alert } from "flowbite-react";
 import TokenContext from "../../context/tokenContext";
 import UserContext from "../../context/userContext";
 
@@ -194,27 +193,52 @@ const Explore = () => {
 
   const { userData, setUserData, authToken } = useContext(UserContext);
 
-  const [tokens, setTokens] = useState([]);
-
+  const [tokens, setTokens] = useState();
+  const [watchlisted, setWatchlisted] = useState();
   const [allTokens, setAllTokens] = useState(true);
+  const [page, setpage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const count = useRef(0);
 
   const watchlistBtn = () => {
     setAllTokens(!allTokens);
   };
 
+  const fetchWatchlisted = async (page) => {
+    const response = await fetch(
+      `http://localhost:5000/api/exchange/fetchwatchlisted`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      }
+    );
+    const data = await response.json();    
+    setWatchlisted(data);
+
+  };
+
+
   const fetchTokens = async () => {
-    // const response = await fetch(
-    //   "http://localhost:5000/api/exchange/fetchalltokens",
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "auth-token": localStorage.getItem("token"),
-    //     },
-    //   }
-    // );
-    // const data = await response.json();
-    setTokens(tokensArr);
+    const response = await fetch(
+      `http://localhost:5000/api/exchange/fetchalltokens/${page}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      }
+    );
+    const data = await response.json();
+    if (tokens) {
+      setTokens([...tokens, ...data]);
+    } else {
+      setTokens(data);
+    }
+    setIsLoading(false);
     // if (data.status.error_code && data.status.error_code=== 429) {
     //   setTokens({
     //     error_message: "Out of API credit limit😪😪. Try again after a while",
@@ -224,22 +248,48 @@ const Explore = () => {
     // }
   };
 
+
+
   useEffect(() => {
-    fetchTokens();
-    console.log("------fetchTokens useEffect in explore page-------");
+    if(userData){
+      fetchWatchlisted();
+      console.log("------getWatchlisted useEffect in explore page-------");
+    }
+  },[userData]);
+
+
+  useEffect(() => {
+    setpage(1);
+    console.log("------setPage useEffect in explore page-------");
   }, []);
 
+  useEffect(() => {
+      if(tokens===undefined || tokens && tokens.length !== page*10){
+        setIsLoading(true);
+        fetchTokens(page);
+        console.log("------fetchTokens useEffect in explore page-------");
+      }
+  }, [page, tokens]);
 
-  let justBtn = "px-5 py-2 rounded-full font-medium text-sm focus:outline-none text-center";
+  console.log("tokens---", tokens);
+  console.log("watchlisted---", watchlisted);
 
-  let selectedBtnClass =
-    justBtn + " text-lime-100 mr-2 border border-lime-100";
+  const loadMore = () => {
+    setpage(page + 1);
+    console.log("The page is now ", page);
+  };
 
-  let unselectedBtnClass =
-    justBtn + " text-zinc-600 hover:text-zinc-200 mr-2";
+  console.log("outside", isLoading);
+
+  let justBtn =
+    "px-5 py-2 rounded-full font-medium text-sm focus:outline-none text-center";
+
+  let selectedBtnClass = justBtn + " text-lime-200 mr-2 border border-lime-200";
+
+  let unselectedBtnClass = justBtn + " text-zinc-400 hover:text-zinc-200 mr-2";
 
   return (
-    <TokenContext.Provider value={{ tokens, setTokens }}>
+    <TokenContext.Provider value={{ tokens, setTokens, watchlisted, setWatchlisted }}>
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
         {userData &&
           (allTokens ? (
@@ -253,9 +303,16 @@ const Explore = () => {
                 className={`${unselectedBtnClass} inline-flex`}
                 onClick={watchlistBtn}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-4 h-4 mr-2 -ml-1" viewBox="0 0 16 16">
-                  <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-              </svg> 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="w-4 h-4 mr-2 -ml-1"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />
+                </svg>
                 WatchListed
               </button>
             </div>
@@ -269,26 +326,70 @@ const Explore = () => {
                 All coins
               </button>
 
-              <button type="button" className={`${selectedBtnClass} inline-flex`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-4 h-4 mr-2 -ml-1" viewBox="0 0 16 16">
-                  <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-              </svg> 
+              <button
+                type="button"
+                className={`${selectedBtnClass} inline-flex`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="w-4 h-4 mr-2 -ml-1"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />
+                </svg>
                 WatchListed
               </button>
             </div>
           ))}
       </div>
 
-      {tokens.error_message ? (
-        <p>{error_message}</p>
+      {tokens && tokens.error_message ? (
+        <p className="my-4 text-zinc-200">{error_message}</p>
       ) : (
         <TokenList
-          tokenList={allTokens ? tokens : tokens.filter((t) => t.iswatchlisted)}
+          tokenList={allTokens ? tokens : watchlisted}
           watchlisted={!allTokens}
         />
       )}
+
+      {allTokens && 
+      <div className="flex justify-center pb-6">
+        <button
+          disabled={isLoading}
+          type="button"
+          class={`rounded-full mx-auto border p-2 px-6 border-zinc-600 text-zinc-400 flex items-center ${!isLoading && "cursor-pointer hover:text-zinc-200"}`}
+          onClick={loadMore}
+        >
+          {isLoading ? (
+            <>
+              <svg
+                aria-hidden="true"
+                role="status"
+                class="inline w-6 h-6 mr-3 text-gray-200 animate-spin dark:text-zinc-600 fill-lime-200"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" />
+              </svg>
+              <p>loading...</p>
+            </>
+          ) : (
+            <p>Load more</p>
+          )}
+        </button>
+      </div>
+      }
     </TokenContext.Provider>
   );
 };
+
 
 export default Explore;

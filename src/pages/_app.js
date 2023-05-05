@@ -17,8 +17,6 @@ export default function MyApp({ Component, pageProps }) {
   const [isLogin, setIsLogin] = useState(true);
 
   const [progress, setProgress] = useState(0);
-
-
   const router = useRouter();
 
   
@@ -43,23 +41,29 @@ export default function MyApp({ Component, pageProps }) {
     
   }
 
-
-  
   useEffect(() => {
-
     router.events.on('routeChangeStart', () =>{
       setProgress(20);
     });
-
+  
     router.events.on('routeChangeComplete', () =>{
       setProgress(100);
     });
+  },[])
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setAuthtoken(token);
+    }
+  }, []);
 
-    setAuthtoken(localStorage.getItem("token"));
-    // console.log("authtoken--",authtoken);
-    fetchUser(authtoken);
-    console.log(".......UseEffect fetchUser(_app.js)................");
-    // console.log("app.js- userData", userData);
+
+  useEffect(() => {
+    if(authtoken){
+      fetchUser(authtoken);
+      console.log(".......UseEffect fetchUser(_app.js)................");
+    }
   }, [authtoken]);
 
 

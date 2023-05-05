@@ -11,7 +11,7 @@ const router = express.Router();
 // const { body, validationResult } = require("express-validator");
 
 // Route 1: Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
-router.get("/fetchalltokens", async (req, res) => {
+router.get("/fetchalltokens/:page", async (req, res) => {
 
   let user = null;
   const token =  req.header('auth-token');
@@ -25,26 +25,51 @@ router.get("/fetchalltokens", async (req, res) => {
   }
 
   try {
-    const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=8&page=1&sparkline=false";
+    const page = req.params.page;
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=10&page=${page}&sparkline=false`;
     const response = await fetch(url);
     const tokens = await response.json();
 
-    if(user){
+    console.log("tokens", tokens);
+
+    if(tokens.status && tokens.status.error_code === 429){
+      res.json({"status": 429, "message":"Exceeded the limit"})
+    }else{
+      if(user){
         const fetchedUser = await User.findById(user.id);
         tokens.forEach(token => {
-            token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); // Replace "id" with the ID field of each token in the JSON object
+            token.iswatchlisted =  fetchedUser.watchlist.includes(token.id);
         });
     }
 
     res.json(tokens);
-
+    }
   } catch (error) {
     console.error(error.message);
     res.status(500).json({error: "Some error occured"});
   }
 });
 
-// Route 2: Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
+// Route 2: Get Watchlisted tokens/coins
+router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
+  try {
+    const fetchedUser = await User.findById(req.user.id);
+    const queryParams = fetchedUser.watchlist.join("%2c%20");
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&order=market_cap_desc&sparkline=false`;
+    console.log("url-",url);
+    const response = await fetch(url);
+    const tokens = await response.json();
+    tokens.forEach(token => {
+      token.iswatchlisted =  true;
+    });
+    res.json(tokens);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Some error occured");
+  }
+});
+
+// Route 3: Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
 router.get("/fetchtoken/:symbol", async (req, res) => {
 
   let user = null;
@@ -124,7 +149,7 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
 });
 
 
-// Route 3: Get the active investments/ portfolio of the user. For each token in the db, fetch their live prices
+// Route 4: Get the active investments/ portfolio of the user. For each token in the db, fetch their live prices
 
 router.get("/fetchactive", fetchUser,  async (req, res) => {
   try {
@@ -167,7 +192,7 @@ router.get("/fetchactive", fetchUser,  async (req, res) => {
   }
 });
 
-// Route 4: Get the transaction history of the investments. Login Required.
+// Route 5: Get the transaction history of the investments. Login Required.
 router.get("/fetchtransactions", fetchUser,  async (req, res) => {
   try {
     const transactions = await Transactions.find({ user: req.user.id }).sort("-txn_timestamp");
@@ -179,7 +204,7 @@ router.get("/fetchtransactions", fetchUser,  async (req, res) => {
 });
 
 
-// Route 5: Get all the required details of a particular token w.r.t the current user. Login required.
+// Route 6: Get all the required details of a particular token w.r.t the current user. Login required.
 
 router.get("/fetchdetails/:token_id", fetchUser,  async (req, res) => {
   try {

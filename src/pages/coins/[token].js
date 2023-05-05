@@ -163,17 +163,17 @@ const Token = () => {
 
   //Fetch coin details
   const fetchTokens = async (token) => {
-    // const response = await fetch(
-    //   `http://localhost:5000/api/exchange/fetchtoken/${token}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "auth-token": localStorage.getItem("token"),
-    //     },
-    //   }
-    // );
-    // const data = await response.json();
+    const response = await fetch(
+      `http://localhost:5000/api/exchange/fetchtoken/${token}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      }
+    );
+    const data = await response.json();
     setTokenDetails(data);
 
     setTotalValue(quantity * data.market_data.current_price.inr);
@@ -194,7 +194,7 @@ const Token = () => {
     //Check if totalValue is less/equal to available cash
     if (userData) {
       if (totalValue > userData.cash) {
-        setBuyError("You don't have enough balance");
+        setBuyError("You don't have enough INR balance");
       } else {
         setBuyError("");
       }
@@ -271,7 +271,7 @@ const Token = () => {
         console.log("useEffect for getting addtional Details");
       }
     }
-  }, [tokenDetails]);
+  }, [userData, tokenDetails]);
 
   // console.log("what txn", transactionDetails);
 
@@ -307,7 +307,7 @@ const Token = () => {
   };
 
   // the order type depends on the state - isBuy, isSell
-  const onConfirmationClick = async () => {
+  const onConfirmationClick = async (e) => {
     let body = JSON.stringify({
       symbol: tokenDetails.symbol,
       name: tokenDetails.name,
@@ -317,8 +317,18 @@ const Token = () => {
       image_url: tokenDetails.image.large,
     });
 
+    if(!quantity){
+      setShowModal(false);
+      setToastMessage(
+        `Please enter a valid quantity.`
+      );
+      setShowToast(true);
+      return;
+    }
+
     // console.log("bodyyd", body);
     if (isBuy) {
+      e.target.innerText = "Buying..."
       const response = await fetch(`http://localhost:5000/api/token/buy`, {
         method: "POST",
         headers: {
@@ -383,12 +393,15 @@ const Token = () => {
 
         setQuantity(0);
         setTotalValue(0);
+
+        e.target.innerText = "Confirm Buy";
       } else {
         setShowModal(false);
         setToastMessage(json.error);
         setShowToast(true);
       }
     } else {
+      e.target.innerText = "Selling..."
       const response = await fetch(`http://localhost:5000/api/token/sell`, {
         method: "POST",
         headers: {
@@ -445,6 +458,8 @@ const Token = () => {
 
         setQuantity(0);
         setTotalValue(0);
+
+        e.target.innerText = "Confirm Sell"
       } else {
         setShowModal(false);
         setToastMessage(json.error);
@@ -558,8 +573,8 @@ const Token = () => {
                 />
               </div>
 
-              <div className="flex flex-col grow lg:flex-row lg:justify-between lg:items-center">
-                <div className="flex">
+              <div className="ms-2 flex flex-col grow lg:flex-row lg:justify-between lg:items-center">
+                <div className="flex items-center justify-between">
                   <div className="flex items-baseline">
                     <h1 className="font-medium text-2xl">
                       {tokenDetails.name}
@@ -607,7 +622,7 @@ const Token = () => {
                 <h3 className="text-md text-zinc-400 font-medium p-4 border-b border-zinc-600">Summary</h3>
 
                 <div className="flex flex-col lg:flex-row">
-                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-600 p-3">
+                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-600 p-4">
                     <p className="text-sm text-zinc-400">Available Qty.</p>
                     <p className="font-medium text-lg">
                       {parseFloat(activeDetails.quantity.toFixed(5))}{" "}
@@ -632,7 +647,7 @@ const Token = () => {
                     </p>
                   </div>
 
-                  <div className="basis-1/2  p-3">
+                  <div className="basis-1/2  p-4">
                     <p className="text-sm text-zinc-400">Invested value</p>
                     <p className="font-medium text-lg">
                       {formatFloat(
@@ -817,7 +832,7 @@ const Token = () => {
                       <div className="p-4 py-6">
                       <button
                         type="button"
-                        className="w-full rounded-lg bg-lime-200 text-zinc-900 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
+                        className="rounded-lg bg-lime-200 text-zinc-900 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
                         onClick={openModal}
                       >
                         Sell
@@ -955,7 +970,7 @@ const Token = () => {
               onClick={onConfirmationClick}
               className="text-zinc-900 bg-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full"
             >
-              {isBuy ? "Buy" : "Sell"}
+              {isBuy ? "Confirm Buy" : "Confirm Sell"}
             </button>
           </Modal.Footer>
         </Modal>
@@ -964,10 +979,10 @@ const Token = () => {
       {showToast && (
         <div
           id="toast-success"
-          className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-zinc-400 rounded-lg shadow bg-zinc-800"
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-zinc-800 shadow-2xl shadow-zinc-900 rounded-lg bg-lime-200"
           role="alert"
         >
-          <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+          {/* <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-lime-100 dark:text-zinc-800">
             <svg
               aria-hidden="true"
               className="w-5 h-5"
@@ -982,11 +997,11 @@ const Token = () => {
               ></path>
             </svg>
             <span className="sr-only">Check icon</span>
-          </div>
-          <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+          </div> */}
+          <div className="text-sm font-medium">{toastMessage}</div>
           <button
             type="button"
-            className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+            className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-600 dark:hover:text-zinc-900 dark:bg-lime-200"
             onClick={onDisableToast}
             aria-label="Close"
           >

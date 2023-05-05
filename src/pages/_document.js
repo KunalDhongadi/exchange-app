@@ -10,18 +10,6 @@ import { useEffect } from 'react';
 // )
 
 export default function Document() {
-
-  // useEffect(() => {
-  //   var aScript = document.createElement('script');
-  // aScript.type = 'text/javascript';
-  // aScript.src = "https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js";
-  // aScript.async = true;
-
-  // document.body.appendChild(aScript);
-  // console.log("inside kjlsjsldj");
-  // },[]);
-  
-
   
   return (
     <Html lang="en" className='dark'>
@@ -29,8 +17,6 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        {/* <script src="flowbite.min.js"></script>  */}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.js" defer></script>
       </body>
     </Html>
   )
