@@ -40,6 +40,7 @@ const Navbar = () => {
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
+    setShowDropdown(false);
     setUserData(null);
     setAuthtoken(null);
   };
@@ -84,13 +85,13 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-zinc-800">
+      <nav className="bg-background/75 backdrop-blur-xl border-b border-zinc-700 z-50 sticky top-0">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <div className="relative flex h-16 items-center justify-between border-b-2 border-zinc-600">
+          <div className="relative flex h-14 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-700"
+                className="inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-inherit"
                 aria-controls="mobile-menu"
                 // aria-expanded={showMenu}
               >
@@ -167,7 +168,7 @@ const Navbar = () => {
             ) : (
               <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
                 <button
-                  className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                  className="border border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                   onClick={toggleLoginModal}
                 >
                   Login
@@ -183,18 +184,18 @@ const Navbar = () => {
               id="dropdownAvatarName1"
               className={`z-10 ${
                 showDropdown ? "block" : "hidden"
-              } absolute top-16 right-0 bg-white divide-y divide-zinc-200 rounded-lg shadow-2xl shadow-zinc-900 w-52 dark:bg-zinc-750 dark:divide-zinc-600`}
+              } absolute top-16 right-0 bg-white divide-y divide-zinc-200 rounded-lg shadow-2xl shadow-zinc-900 w-52 dark:bg-zinc-800 dark:divide-zinc-700`}
             >
-              <div className="p-5 text-sm text-white">
-                <div className="font-medium text-base">{userData.name}</div>
-                <div className="truncate text-zinc-300">{userData.email}</div>
+              <div className="p-4 py-3">
+                <div className="font-medium text-zinc-400 text-sm">{userData.name}</div>
+                <div className="truncate text-sm text-zinc-400">{userData.email}</div>
               </div>
 
-              <div className="pt-3 text-sm m-5 mt-0 border-t border-zinc-600 text-white">
-                <div className="text-zinc-300">INR Balance</div>
-                <div className="font-medium text-white">₹{userData.cash.toFixed(1)}</div>
+              <div className="mx-4 py-3 mt-0 border-t border-zinc-600 text-zinc-400">
+                <div className="text-xs">INR Balance</div>
+                <div className="text-sm">₹{userData.cash.toFixed(1)}</div>
               </div>
-
+{/* 
               <ul
                 className="py-2 text-sm text-gray-700 dark:text-gray-200"
                 aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton"
@@ -204,7 +205,7 @@ const Navbar = () => {
                     Deposit
                   </p>
                 </li>
-              </ul>
+              </ul> */}
               <div className="py-2">
                 <p
                   onClick={handleLogout}
@@ -218,18 +219,18 @@ const Navbar = () => {
 
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex flex-shrink-0 items-center">
-                <Link href="/explore" className="flex items-center">
+                <Link href="/explore" className="flex no-underline items-center">
                   <h1 className="text-white font-semibold text-lg">Coindeck</h1>
                 </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex justify-between w-full">
-                <div className="flex space-x-4">
+                <div className="flex">
                   <Link
                     href="/explore"
-                    className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
+                    className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                       pathname === "/explore"
-                        ? " text-lime-200 underline underline-offset-8"
-                        : " text-zinc-200"
+                        ? " text-lime-200 border border-zinc-700"
+                        : " text-zinc-200 no-underline"
                     }`}
                     aria-current={pathname === "/explore" ? "page" : undefined}
                   >
@@ -239,10 +240,10 @@ const Navbar = () => {
                     <>
                       <Link
                         href="/portfolio"
-                        className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
+                        className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                           pathname === "/portfolio"
-                            ? " text-lime-200 underline underline-offset-8"
-                            : " text-zinc-200"
+                            ? " text-lime-200 border border-zinc-700"
+                            : " text-zinc-200 no-underline"
                         }`}
                         aria-current={
                           pathname === "/portfolio" ? "page" : undefined
@@ -253,10 +254,10 @@ const Navbar = () => {
 
                       <Link
                         href="/transactions"
-                        className={`rounded-md px-3 py-2 hover:text-lime-200 text-sm font-medium ${
+                        className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                           pathname === "/transactions"
-                            ? " text-lime-200 underline underline-offset-8"
-                            : " text-zinc-200"
+                            ? " text-lime-200 border border-zinc-700"
+                            : " text-zinc-200 no-underline"
                         }`}
                         aria-current={
                           pathname === "transactions" ? "page" : undefined
@@ -280,7 +281,7 @@ const Navbar = () => {
                       <span className="sr-only">Open user menu</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
+                        className="w-5 h-5"
                         fill="currentColor"
                         viewBox="0 0 16 16"
                       >
@@ -308,14 +309,14 @@ const Navbar = () => {
                 ) : (
                   <div className="flex space-x-4">
                     <button
-                      className="border-2 border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                      className="border  border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 text-sm font-medium"
                       onClick={toggleLoginModal}
                     >
                       Login
                     </button>
 
                     <button
-                      className="bg-lime-200 text-lime-900 rounded-md px-3 py-2 text-sm font-medium"
+                      className="bg-lime-200 text-lime-900 rounded-md px-3 text-sm font-medium"
                       onClick={toggleSignupModal}
                     >
                       Signup
@@ -332,14 +333,14 @@ const Navbar = () => {
           id="mobile-menu"
         >
           <div
-            className={`space-y-1 mx-2 pb-3 pt-2 border-b-2 border-zinc-600`}
+            className={`space-y-1 bg-background p-3 border-t border-zinc-700`}
           >
             <Link
               href="/explore"
-              className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
+              className={`block px-3 py-2 hover:text-lime-200 text-center ${
                 pathname === "/explore"
-                  ? " text-lime-200 underline underline-offset-8"
-                  : " text-zinc-200"
+                  ? " text-lime-200 border border-zinc-700 rounded-md"
+                  : " text-zinc-200 no-underline"
               }`}
               aria-current="page"
             >
@@ -350,10 +351,10 @@ const Navbar = () => {
               <>
                 <Link
                   href="/portfolio"
-                  className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
+                  className={`block px-3 py-2 hover:text-lime-200 text-center ${
                     pathname === "/portfolio"
-                      ? " text-lime-200 underline underline-offset-8"
-                      : " text-zinc-200"
+                      ? " text-lime-200 border border-zinc-700 rounded-md"
+                      : " text-zinc-200 no-underline"
                   }`}
                 >
                   Portfolio
@@ -361,10 +362,10 @@ const Navbar = () => {
 
                 <Link
                   href="/transactions"
-                  className={`block px-3 py-2 hover:text-lime-200 text-base font-medium ${
+                  className={`block px-3 py-2 hover:text-lime-200 text-center ${
                     pathname === "/transactions"
-                      ? " text-lime-200 underline underline-offset-8"
-                      : " text-zinc-200"
+                      ? " text-lime-200 border border-zinc-700 rounded-md"
+                      : " text-zinc-200 no-underline"
                   }`}
                 >
                   Transactions

@@ -11,7 +11,7 @@ const router = express.Router();
 // const { body, validationResult } = require("express-validator");
 
 // Route 1: Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
-router.get("/fetchalltokens/:page", async (req, res) => {
+router.get("/fetchalltokens", async (req, res) => {
 
   let user = null;
   const token =  req.header('auth-token');
@@ -25,12 +25,12 @@ router.get("/fetchalltokens/:page", async (req, res) => {
   }
 
   try {
-    const page = req.params.page;
+    const {page} = req.query;
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=10&page=${page}&sparkline=false`;
     const response = await fetch(url);
     const tokens = await response.json();
 
-    console.log("tokens", tokens);
+    // console.log("tokens", tokens);
 
     if(tokens.status && tokens.status.error_code === 429){
       res.json({"status": 429, "message":"Exceeded the limit"})
@@ -54,6 +54,10 @@ router.get("/fetchalltokens/:page", async (req, res) => {
 router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
   try {
     const fetchedUser = await User.findById(req.user.id);
+    if(fetchedUser.watchlist.length === 0){
+      res.json(null);
+      return;
+    }
     const queryParams = fetchedUser.watchlist.join("%2c%20");
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&order=market_cap_desc&sparkline=false`;
     console.log("url-",url);
@@ -87,9 +91,18 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
     const symbol = req.params.symbol;
     const url = `https://api.coingecko.com/api/v3/coins/${symbol}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`;
     const response = await fetch(url);
+
+    if(response.status === 404){
+      const error = await response.json();
+      // console.log(error);
+      res.status(404).json({"error": error.error});
+      return;
+    }
+
     const token = await response.json();
 
-    console.log("bdabda", token.market_data[0]);
+
+    // console.log("bdabda", token.market_data[0]);
 
     // Deleting unwanted fields
     delete token.asset_platform_id;
@@ -140,7 +153,7 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
         token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); 
     }
 
-    res.json(token);
+    res.status(200).json(token);
 
   } catch (error) {
     console.error(error.message);
@@ -206,10 +219,14 @@ router.get("/fetchtransactions", fetchUser,  async (req, res) => {
 
 // Route 6: Get all the required details of a particular token w.r.t the current user. Login required.
 
-router.get("/fetchdetails/:token_id", fetchUser,  async (req, res) => {
+router.get("/fetchdetails", fetchUser,  async (req, res) => {
   try {
-    const activeTokens = await Active.find({ user: req.user.id, token_id: req.params.token_id}).lean();
-    const transactions = await Transaction.find({ user: req.user.id, token_id: req.params.token_id}).sort("-txn_timestamp").lean();
+    const {token_id} = req.query;
+    const activeTokens = await Active.find({ user: req.user.id, token_id: token_id}).lean();
+    const transactions = await Transaction.find({ user: req.user.id, token_id: token_id}).sort("-txn_timestamp").lean();
+
+    console.log("blafs" ,activeTokens);
+    console.log("blafs txns" ,transactions);
 
     // Adding average token cost
     for (let i = 0; i < activeTokens.length; i++) {
@@ -227,15 +244,16 @@ router.get("/fetchdetails/:token_id", fetchUser,  async (req, res) => {
 
 
 const getAverageCost = async(user, token_id) =>{
-  const transactions = await Transaction.find({user:user, token_id: token_id, quantity : { $gt:0 }});
+  const transactions = await Transaction.find({user:user, token_id: token_id});
   let quantitySum = 0;
   let priceSum = 0;
   // console.log({transactions});
   transactions.forEach(transaction => {
     quantitySum += transaction.quantity;
-    priceSum += transaction.price;
+    // console.log("Fds", quantitySum);
+    priceSum += transaction.price * transaction.quantity;
   });
-  console.log("gd", priceSum/ quantitySum);
+  // console.log("token id-", token_id, "price-", priceSum , " qty-", quantitySum);
   return (priceSum / quantitySum);
 }
 

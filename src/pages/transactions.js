@@ -2,12 +2,12 @@ import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/userContext";
 import { useRouter } from "next/router";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const transactions = () => {
   const { userData, setUserData } = useContext(UserContext);
 
   const [transactions, setTransactions] = useState();
-  const [fetched, setfetched] = useState(false);
 
   const router = useRouter();
   
@@ -29,21 +29,16 @@ const transactions = () => {
   // console.log("user txn", userData);
 
   useEffect(() => {
-    if (!userData) {
+    console.log("inside txn useff");
+    console.log("userData-", userData);
+    if (userData !== undefined && userData === null) {
       router.push("/explore");
-    } else {
-      console.log("useEffect for getting transactions page");
+    }
+    if(userData){
       fetchtransactions();
+      console.log("useEffect for getting transactions page");
     }
   }, [userData]);
-
-  useEffect(() => {
-      if(!fetched){
-        console.log("useEffect for getting transactions page");
-        fetchtransactions();
-        setfetched(true);
-      }
-  }, []);
 
   // console.log("transactions", transactions);
 
@@ -87,31 +82,35 @@ const transactions = () => {
     return parseFloat(number.toFixed(toFixedN)).toLocaleString("en-IN");
   };
 
+  if(transactions === undefined){
+    return <LoadingSpinner/>
+  }
+
   return (
     <>
       {userData && (
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-2">
+        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           {transactions && transactions.length > 0 ? (
             <>
-          <h1 className="text-md font-medium text-zinc-200 my-3">Transactions</h1>
+          <h1 className="text-md text-zinc-200 py-4">Transactions</h1>
 
-          <div className="overflow-x-auto border pb-4 border-zinc-600 rounded-lg">
+          <div className="overflow-x-auto border pb-4 border-zinc-700 mb-6 rounded-lg">
             <div className="table w-full text-sm text-left">
               <div className="table-header-group text-xs text-zinc-500">
                 <div className="table-row font-medium text-zinc-400">
-                  <div className="table-cell border-b border-r bg-zinc-800 md:bg-inherit border-zinc-600 px-6 py-3 md:border-x-0 sticky left-0 md:static">
+                  <div className="table-cell text-xs border-b border-r bg-background text-zinc-500 md:bg-background border-zinc-700 px-6 py-3 md:border-x-0 sticky left-0 md:static">
                     Asset name
                   </div>
-                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
                     Price
                   </div>
-                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
                     Quantity
                   </div>
-                  <div className="table-cell border-b border-zinc-600 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
                     Total Value
                   </div>
-                  <div className="table-cell border-b border-zinc-600 px-6 py-3"></div>
+                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3"></div>
                 </div>
               </div>
               <div className="table-row-group">
@@ -121,10 +120,10 @@ const transactions = () => {
                     return (
                       <div
                         key={transaction.txn_timestamp}
-                        className="table-row text-white dark:bg-zinc-800 dark:border-zinc-600"
+                        className="table-row text-white dark:bg-inherit dark:border-zinc-700"
                       >
                         <div
-                          className="table-cell border-b border-r bg-zinc-800 md:bg-inherit border-zinc-600 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
+                          className="table-cell border-b border-r bg-background md:bg-background border-zinc-700 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
                         >
                           <div className="flex w-max">
                           <img
@@ -134,26 +133,26 @@ const transactions = () => {
                           />
 
                           <div className="ms-3">
-                            <Link href={tokenUrl} className="text-lg font-medium hover:underline">
+                            <Link href={tokenUrl} className="text-md font-medium hover:underline">
                               {transaction.name}
                             </Link>
-                            <p className="text-zinc-400">
+                            <p className="text-sm text-zinc-400">
                               {transaction.symbol.toUpperCase()}
                             </p>
                           </div>
 
                           </div>
                         </div>
-                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
                           ₹{transaction.price.toLocaleString("en-IN")}
                         </div>
-                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
                           {Number.isInteger(transaction.quantity)
                             ? Math.abs(transaction.quantity)
                             : formatFloat(transaction.quantity, 3)}
                           {transaction.symbol.toUpperCase()}
                         </div>
-                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
                           <p className="font-medium">
                             {Number.isInteger(totalValue)
                               ? transaction.quantity > 0
@@ -166,7 +165,7 @@ const transactions = () => {
                             INR
                           </p>
                         </div>
-                        <div className="table-cell border-b border-zinc-600 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
                           {transaction.quantity > 0 ?
                           <p><span className="font-medium">Bought</span> {formatDateTime(1, transaction.txn_timestamp)}</p>:
                           <p><span className="font-medium">Sold</span> {formatDateTime(1, transaction.txn_timestamp)}</p>

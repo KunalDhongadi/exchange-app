@@ -198,13 +198,16 @@ const Explore = () => {
   const [allTokens, setAllTokens] = useState(true);
   const [page, setpage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const count = useRef(0);
+  const [limitExceeded, setLimitExceeded] = useState(false);
+  const userDataRef = useRef();
+
+  
 
   const watchlistBtn = () => {
     setAllTokens(!allTokens);
   };
 
-  const fetchWatchlisted = async (page) => {
+  const fetchWatchlisted = async () => {
     const response = await fetch(
       `http://localhost:5000/api/exchange/fetchwatchlisted`,
       {
@@ -223,7 +226,7 @@ const Explore = () => {
 
   const fetchTokens = async () => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchalltokens/${page}`,
+      `http://localhost:5000/api/exchange/fetchalltokens?page=${page}`,
       {
         method: "GET",
         headers: {
@@ -233,21 +236,26 @@ const Explore = () => {
       }
     );
     const data = await response.json();
+    if (data && data.status=== 429) {
+      setLimitExceeded(true);
+      return;
+    } 
     if (tokens) {
       setTokens([...tokens, ...data]);
     } else {
       setTokens(data);
     }
     setIsLoading(false);
-    // if (data.status.error_code && data.status.error_code=== 429) {
-    //   setTokens({
-    //     error_message: "Out of API credit limit😪😪. Try again after a while",
-    //   });
-    // } else {
-    //   setTokens(data);
-    // }
   };
 
+  useEffect(() => {
+    if(userData){
+      userDataRef.current = true;
+    }else{
+      userDataRef.current = false;
+    }
+  }, [])
+  
 
 
   useEffect(() => {
@@ -264,16 +272,36 @@ const Explore = () => {
   }, []);
 
   useEffect(() => {
-      if(tokens===undefined || tokens && tokens.length !== page*10){
+      if(tokens===undefined || tokens && tokens.length !== page*10 || tokens===null){
         setIsLoading(true);
-        fetchTokens(page);
+        fetchTokens();
         console.log("------fetchTokens useEffect in explore page-------");
       }
   }, [page, tokens]);
 
-  console.log("tokens---", tokens);
-  console.log("watchlisted---", watchlisted);
+  useEffect(() => {
+    // console.log("ud-", userData===null, "userDataRef", userDataRef);
+    if(userData !== undefined && userDataRef.current === (userData===null)){
+      setTokens(null);
+      userDataRef.current = !userDataRef.current;
+      console.log("inside thitsfds");
+    }
+  },[userData]);
 
+  // useEffect(() => {
+  //   if(tokens === null){
+  //     setIsLoading(true);
+  //     fetchTokens();
+  //   }
+  // }, [tokens])
+  
+
+
+  // console.log("tokens---", tokens);
+  // console.log("watchlisted---", watchlisted);
+
+  console.log("udr",userDataRef);
+  
   const loadMore = () => {
     setpage(page + 1);
     console.log("The page is now ", page);
@@ -281,19 +309,29 @@ const Explore = () => {
 
   console.log("outside", isLoading);
 
-  let justBtn =
-    "px-5 py-2 rounded-full font-medium text-sm focus:outline-none text-center";
+  if(limitExceeded){
+    return(
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
+        <h3 className="mb-1 text-zinc-200">Exceeded the API limit😪😪. Please try again after a while.</h3>
+        <p className="text-zinc-300">If you're logged in, you still should be able to access your portfolio and transactions.</p>
+      </div>
+    )
+  }
 
-  let selectedBtnClass = justBtn + " text-lime-200 mr-2 border border-lime-200";
+  let justBtn =
+    "px-5 py-2 text-sm focus:outline-none text-center";
+
+  let selectedBtnClass = justBtn + " text-zinc-200 mr-2 border-b border-zinc-200";
 
   let unselectedBtnClass = justBtn + " text-zinc-400 hover:text-zinc-200 mr-2";
+  
 
   return (
     <TokenContext.Provider value={{ tokens, setTokens, watchlisted, setWatchlisted }}>
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
         {userData &&
           (allTokens ? (
-            <div className="">
+            <div className="border-b border-zinc-700">
+              <div className="mx-auto max-w-7xl px-2 sm:px-8 lg:px-8 pt-2">
               <button type="button" className={selectedBtnClass}>
                 All coins
               </button>
@@ -315,9 +353,11 @@ const Explore = () => {
                 </svg>
                 WatchListed
               </button>
+              </div>
             </div>
           ) : (
-            <div className="">
+            <div className="border-b border-zinc-700">
+              <div className="mx-auto max-w-7xl px-2 sm:px-8 lg:px-8 pt-2">
               <button
                 type="button"
                 className={unselectedBtnClass}
@@ -342,9 +382,9 @@ const Explore = () => {
                 </svg>
                 WatchListed
               </button>
+              </div>
             </div>
           ))}
-      </div>
 
       {tokens && tokens.error_message ? (
         <p className="my-4 text-zinc-200">{error_message}</p>
@@ -360,7 +400,7 @@ const Explore = () => {
         <button
           disabled={isLoading}
           type="button"
-          class={`rounded-full mx-auto border p-2 px-6 border-zinc-600 text-zinc-400 flex items-center ${!isLoading && "cursor-pointer hover:text-zinc-200"}`}
+          className={`rounded-full mx-auto text-sm border p-2 px-6 border-zinc-700 text-zinc-400 flex items-center ${!isLoading && "cursor-pointer hover:text-zinc-200"}`}
           onClick={loadMore}
         >
           {isLoading ? (
@@ -368,7 +408,7 @@ const Explore = () => {
               <svg
                 aria-hidden="true"
                 role="status"
-                class="inline w-6 h-6 mr-3 text-gray-200 animate-spin dark:text-zinc-600 fill-lime-200"
+                className="inline w-6 h-6 mr-3 text-gray-200 animate-spin dark:text-zinc-700 fill-lime-200"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

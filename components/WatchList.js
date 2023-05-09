@@ -26,7 +26,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
 
   useEffect(() => {
     setWatchlistedCoin(isWatchlisted);
-  }, [])
+  }, [isWatchlisted])
     
 
   const watchlistToken = async(e) => {
@@ -85,7 +85,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
  
   return (
     <>
-    <motion.div whileHover="hover" whileTap="tap" className='rounded-full bg-zinc-800 border border-zinc-600 flex w-12 h-12 justify-center items-center outline-none group' onClick={watchlistToken}>
+    <motion.div whileHover="hover" whileTap="tap" className='rounded-full bg-zinc-800 border border-zinc-700 flex w-12 h-12 justify-center items-center outline-none group' onClick={watchlistToken}>
     {
       watchlistedCoin ?
       <motion.svg variants={svgVariants} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block text-lime-200 group outline:none" viewBox="0 0 16 16">

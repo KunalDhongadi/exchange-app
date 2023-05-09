@@ -54,7 +54,10 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      console.log("token set");
       setAuthtoken(token);
+    }else{
+      setUserData(null);
     }
   }, []);
 
@@ -63,6 +66,9 @@ export default function MyApp({ Component, pageProps }) {
     if(authtoken){
       fetchUser(authtoken);
       console.log(".......UseEffect fetchUser(_app.js)................");
+    }else if(authtoken === null){
+      console.log("userdata null");
+      setUserData(null);
     }
   }, [authtoken]);
 
@@ -71,7 +77,7 @@ export default function MyApp({ Component, pageProps }) {
     <>
     <UserContext.Provider value={{userData, setUserData, authtoken, setAuthtoken}}>
       <ModalContext.Provider value={{showModal, setShowModal, isLogin, setIsLogin}}>
-        <LoadingBar color={"#DEF7EC"} progress={progress} waitingTime={400} onLoaderFinished={()=>setProgress(0)} />
+        <LoadingBar color={"#d9f99d"} progress={progress} waitingTime={400} onLoaderFinished={()=>setProgress(0)} />
         <Navbar/>
         <Component {...pageProps} />
         <Footer/>

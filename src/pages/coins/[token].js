@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import UserContext from "../../../context/userContext";
 import Link from "next/link";
 import WatchList from "../../../components/WatchList";
 import { Modal, Toast } from "flowbite-react";
-import transactions from "../transactions";
 import ModalContext from "../../../context/modalContext";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 const Token = () => {
   const data = {
@@ -127,6 +127,8 @@ const Token = () => {
 
   const [query, setQuery] = useState("");
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [tokenDetails, setTokenDetails] = useState();
 
   const [activeDetails, setActiveDetails] = useState();
@@ -150,10 +152,21 @@ const Token = () => {
 
   const [isTruncated, setIsTruncated] = useState(true); //Description read more/ less
 
-  const router = useRouter();
-  // const token_id = router.query.token;
-  // console.log("[token] router----=--=", token_id);
+  const [detailsFetched, setDetailsFetched] = useState(false);
+  const [tokenFetched, setTokenFetched] = useState(false);
 
+  const router = useRouter();
+  const loggedInRef = useRef();
+
+  useEffect(() => {
+    if(userData){
+      loggedInRef.current = true;
+    }else if(userData === null){
+      loggedInRef.current = false;
+    }
+  }, []);
+
+  // gets query subroute
   useEffect(() => {
     const pathname = router.query.token;
     if (pathname) {
@@ -161,6 +174,16 @@ const Token = () => {
     }
   }, [router.query]);
 
+  //checks and sets state to login status
+  useEffect(() => {
+    if(userData){
+      setIsLoggedIn(true);
+    }else if(userData === null){
+      setIsLoggedIn(false);
+    }
+  }, [userData]);
+
+ 
   //Fetch coin details
   const fetchTokens = async (token) => {
     const response = await fetch(
@@ -173,22 +196,81 @@ const Token = () => {
         },
       }
     );
+    if(response.status == 404){
+      setTokenDetails(null);
+      return;
+    }
     const data = await response.json();
     setTokenDetails(data);
-
     setTotalValue(quantity * data.market_data.current_price.inr);
   };
 
-  useEffect(() => {
-    if (query) {
-      fetchTokens(query);
-      console.log("++++useEffect fetchTokens [token].js+++");
-    } else {
-      console.log("waiting for query");
-    }
-  }, [query]);
+  //To fetch details such as available qty and transactions
+  const fetchdetails = async (token_id) => {
+    const response = await fetch(
+      `http://localhost:5000/api/exchange/fetchdetails?token_id=${token_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      }
+    );
+    const data = await response.json();
+    setActiveDetails(data.activeTokens[0]);
+    settransactionDetails([data.transactions[0]]);
 
-  // console.log("token details", tokenDetails);
+    if (activeDetails) {
+      setReturnPercentage(
+        (tokenDetails.market_data.current_price.inr -
+          activeDetails.averageCost) /
+          activeDetails.averageCost *
+          100
+      );
+    }
+  };
+
+  // calls fetchtoken and fetchdetails on getting query.
+  useEffect(() => {
+    if(query && isLoggedIn!==undefined && !tokenFetched){
+      fetchTokens(query);
+      console.log(">>>useEffect fetchTokens() <<<<");
+      setTokenFetched(true);
+    }
+    if(isLoggedIn === true && loggedInRef.current === false){
+      console.log("here now");
+      fetchTokens(query);
+    }
+  }, [query,isLoggedIn, tokenFetched, loggedInRef.current]);
+
+
+  useEffect(() => {
+    if(isLoggedIn !== undefined){
+      if (tokenDetails !== undefined && isLoggedIn === true && !detailsFetched) {
+        fetchdetails(tokenDetails.id);
+        setDetailsFetched(true);
+        console.log("+++UseEffect fetchdetails() +++");
+      }
+    }
+    
+  }, [tokenDetails, isLoggedIn, detailsFetched]);
+
+  useEffect(() => {
+    if (isLoggedIn === false) {
+      setActiveDetails(null);
+      settransactionDetails(null);
+      setDetailsFetched(false);
+      setTokenFetched(false);
+      loggedInRef.current = false;
+      if(tokenDetails){
+        const { iswatchlisted, ...tokendetails } = tokenDetails;
+        setTokenDetails(tokendetails);
+      }
+    }
+  }, [isLoggedIn])
+  
+
 
   useEffect(() => {
     //Check if totalValue is less/equal to available cash
@@ -237,43 +319,7 @@ const Token = () => {
       return () => clearTimeout(timer);
     }
   }, [showToast]);
-
-  const fetchdetails = async (token_id) => {
-    const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchdetails/${token_id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("token"),
-        },
-      }
-    );
-    const data = await response.json();
-    setActiveDetails(data.activeTokens[0]);
-    settransactionDetails([data.transactions[0]]);
-
-    if (activeDetails) {
-      setReturnPercentage(
-        ((tokenDetails.market_data.current_price.inr -
-          activeDetails.averageCost) /
-          activeDetails.averageCost) *
-          100
-      );
-    }
-  };
-
-  //FetchDetails useEffect
-  useEffect(() => {
-    if (userData) {
-      if (tokenDetails !== undefined) {
-        fetchdetails(tokenDetails.id);
-        console.log("useEffect for getting addtional Details");
-      }
-    }
-  }, [userData, tokenDetails]);
-
-  // console.log("what txn", transactionDetails);
+  
 
   const buySellBtn = () => {
     setIsBuy(!isBuy);
@@ -385,7 +431,7 @@ const Token = () => {
         const isoString = now.toISOString();
         let newTransaction = {
           txn_timestamp: isoString,
-          symbol: transactionDetails.symbol,
+          symbol: tokenDetails.market_data.symbol,
           quantity: quantity,
           price: tokenDetails.market_data.current_price.inr,
         };
@@ -470,12 +516,10 @@ const Token = () => {
 
   const openModal = () => {
     setShowModal(true);
-    // console.log("the model is now", ismodal);
   };
 
   const onModalClose = () => {
     setShowModal(false);
-    // console.log("the model is now", ismodal);
   };
 
   const onShowToast = () => {
@@ -516,9 +560,9 @@ const Token = () => {
 
   //Format float to limit decimals and add commas
   const formatFloat = (number, toFixedN) => {
-    if (number < 0.0001) {
+    if (Math.abs(number) < 0.0001) {
       return parseFloat(number.toFixed(5));
-    } else if (number < 0.001) {
+    } else if (Math.abs(number) < 0.001) {
       return parseFloat(number.toFixed(4));
     } else {
       return parseFloat(number.toFixed(toFixedN)).toLocaleString("en-IN");
@@ -533,21 +577,27 @@ const Token = () => {
   // ------------------------
 
   if (tokenDetails === undefined) {
-    return <p>Loading..</p>;
+    return <LoadingSpinner/>;
+  }else if(tokenDetails === null){
+    return (
+    <div className="flex flex-row justify-center my-10">
+      <h2 className="p-2 mb-2 font-medium text-xl text-center text-zinc-200">Coin not found.</h2>
+      <Link href="/explore" className="p-2 px-4 text-zinc-200 rounded-full no-underline border w-fit mx-auto border-zinc-700 hover:text-white">Explore coins</Link>
+    </div>);
   }
 
   return (
     <>
       <div className="text-white">
         <nav
-          className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 text-zinc-400"
+          className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 text-zinc-400 border-b border-zinc-700"
           aria-label="Breadcrumb"
         >
-          <ol className="flex items-center space-x-1 md:space-x-3 border-b py-2 border-zinc-600">
+          <ol className="flex items-center space-x-1 md:space-x-3 py-2">
             <li className="inline-flex items-center">
               <Link
                 href="/explore"
-                className="inline-flex items-center text-xs font-medium hover:text-teal-600 dark:text-zinc-400 dark:hover:text-white"
+                className="inline-flex no-underline items-center text-xs font-medium hover:text-teal-600 dark:text-zinc-400 dark:hover:text-white"
               >
                 Explore
               </Link>
@@ -555,14 +605,14 @@ const Token = () => {
             <li>
               <div className="flex items-center">
                 <p>/</p>
-                <p className="ml-1 text-xs font-medium md:ml-2 dark:text-zinc-400 dark:hover:text-white">
+                <p className="ml-1 text-xs font-medium md:ml-2 dark:text-zinc-400 cursor-default">
                   {tokenDetails.name}
                 </p>
               </div>
             </li>
           </ol>
         </nav>
-        <div className="max-w-7xl px-2 sm:px-6 lg:px-8 py-2 my-3 mx-auto flex flex-wrap items-start justify-between">
+        <div className="token-page min-h-[70vh] max-w-7xl px-2 sm:px-6 lg:px-8 py-2 my-3 mx-auto flex flex-wrap items-start justify-between">
           <div className="lg:w-4/6 md:w-3/5 md:pr-8 lg:pr-8 pr-0">
             <div className="flex justify-between flex-row">
               <div className="flex items-center">
@@ -573,40 +623,42 @@ const Token = () => {
                 />
               </div>
 
-              <div className="ms-2 flex flex-col grow lg:flex-row lg:justify-between lg:items-center">
+              <div className="ms-3 flex flex-col grow lg:flex-row lg:justify-between lg:items-center">
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline">
-                    <h1 className="font-medium text-2xl">
+                    <h1 className="font-medium text-xl">
                       {tokenDetails.name}
                     </h1>
                     <p className="ps-2 text-zinc-400">{tokenDetails.symbol.toUpperCase()}</p>
                   </div>
-                  {userData && (
-                    <div className="ms-4">
-                      <WatchList
-                        token_id={tokenDetails.id}
-                        isWatchlisted={tokenDetails.iswatchlisted}
-                        isTokenPage={true}
-                      />
-                    </div>
-                  )}
+                  
+                  <div className="ms-4">
+
+                    
+                    <WatchList
+                      token_id={isLoggedIn ? tokenDetails.id : false}
+                      isWatchlisted={isLoggedIn ? tokenDetails.iswatchlisted : false}
+                      isTokenPage={true}
+                    />
+                  </div>
+                  
                 </div>
                 <div className="flex items-center">
-                  <h1 className="font-medium me-2 text-3xl">
+                  <h1 className="font-medium me-2 text-2xl">
                     ₹
                     {tokenDetails.market_data.current_price.inr.toLocaleString(
                       "en-IN"
                     )}
                   </h1>
                   {tokenDetails.market_data.price_change_percentage_24h >= 0 ? (
-                    <p className="ms-2 px-4 rounded-full border border-green-400 text-green-400">
+                    <p className="ms-2 px-4 text-sm rounded-full border border-green-400 text-green-400">
                       {tokenDetails.market_data.price_change_percentage_24h.toFixed(
                         2
                       )}
                       %
                     </p>
                   ) : (
-                    <p className="ms-2 px-4 rounded-full border border-red-400 text-red-400">
+                    <p className="ms-2 px-4 text-sm rounded-full border border-red-400 text-red-400">
                       {tokenDetails.market_data.price_change_percentage_24h.toFixed(
                         2
                       )}
@@ -618,13 +670,13 @@ const Token = () => {
             </div>
 
             {activeDetails && activeDetails.length !== 0 && (
-              <div className="bg-zinc-800 border border-zinc-600 rounded-lg my-3">
-                <h3 className="text-md text-zinc-400 font-medium p-4 border-b border-zinc-600">Summary</h3>
+              <div className="bg-inherit border border-zinc-700 rounded-lg my-3">
+                <h3 className="text-md text-zinc-200 p-3 border-b border-zinc-700">Summary</h3>
 
                 <div className="flex flex-col lg:flex-row">
-                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-600 p-4">
-                    <p className="text-sm text-zinc-400">Available Qty.</p>
-                    <p className="font-medium text-lg">
+                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-700 p-3">
+                    <p className="text-xs text-zinc-400">Available Qty.</p>
+                    <p className="font-medium">
                       {parseFloat(activeDetails.quantity.toFixed(5))}{" "}
                       {tokenDetails.symbol.toUpperCase()}
                     </p>
@@ -637,28 +689,28 @@ const Token = () => {
                       INR
                       {returnPercentage >= 0 ? (
                         <span className="ps-2 text-green-400">
-                          ({formatFloat(returnPercentage)}%)
+                          ({formatFloat(returnPercentage, 2)}%)
                         </span>
                       ) : (
                         <span className="ps-2 text-red-400">
-                          ({formatFloat(returnPercentage)}%)
+                          ({formatFloat(returnPercentage, 2)}%)
                         </span>
                       )}
                     </p>
                   </div>
 
-                  <div className="basis-1/2  p-4">
-                    <p className="text-sm text-zinc-400">Invested value</p>
-                    <p className="font-medium text-lg">
+                  <div className="basis-1/2  p-3">
+                    <p className="text-xs text-zinc-400">Invested value</p>
+                    <p className="font-medium">
                       {formatFloat(
                         activeDetails.quantity * activeDetails.averageCost,
                         2
                       )}
                       INR
                     </p>
-                    <p className="text-sm">
-                      Avg Price-
-                      <span>
+                    <p className="text-sm text-zinc-300">
+                      Avg Price - 
+                      <span className="text-zinc-200">
                         {formatFloat(activeDetails.averageCost, 2)}INR
                       </span>
                     </p>
@@ -668,10 +720,10 @@ const Token = () => {
             )}
 
             <div className="mt-5">
-              <p className="font-medium text-zinc-400 text-lg mb-2">Market Data</p>
+              <p className="text-zinc-200 text-md mb-2">Market Data</p>
               <div className="flex gap-4">
                 <div className="grow border-r-2 border-zinc-400">
-                  <p className="text-sm text-zinc-400">Market Cap</p>
+                  <p className="text-xs text-zinc-400">Market Cap</p>
                   <p>
                     ₹
                     {tokenDetails.market_data.market_cap.inr.toLocaleString(
@@ -680,7 +732,7 @@ const Token = () => {
                   </p>
                 </div>
                 <div className="grow">
-                  <p className="text-sm text-zinc-400">Total Volume</p>
+                  <p className="text-xs text-zinc-400">Total Volume</p>
                   <p>
                     ₹
                     {tokenDetails.market_data.total_volume.inr.toLocaleString(
@@ -691,11 +743,11 @@ const Token = () => {
               </div>
             </div>
 
-            <div className="mt-5">
-              <p className="font-medium text-lg text-zinc-400 mb-2">Additional Details</p>
+            <div className="mt-6">
+              <p className="text-md text-zinc-200 mb-2">Additional Details</p>
 
               <div className="mb-2">
-                <p className="text-sm text-zinc-400">Official Website</p>
+                <p className="text-xs text-zinc-400">Official Website</p>
                 <a
                   href={tokenDetails.links.homepage[0]}
                   className="hover:underline"
@@ -703,8 +755,8 @@ const Token = () => {
                   {tokenDetails.links.homepage[0]}
                 </a>
               </div>
-              <div>
-                <p className="text-sm text-zinc-400">Description</p>
+              <div className="mt-4">
+                <p className="text-xs text-zinc-400">Description</p>
                 {tokenDetails.description.en === "" ? (
                   <p>N.A</p>
                 ) : (
@@ -720,8 +772,8 @@ const Token = () => {
           </div>
 
           <div className="lg:w-2/6 md:w-2/5 w-full">
-            <div className="bg-zinc-800 border border-zinc-600 rounded-xl text-zinc-200 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
-              <div className="flex py-6 px-4 font-medium border-b border-zinc-600">
+            <div className="bg-background border border-zinc-700 rounded-xl text-zinc-200 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+              <div className="flex py-6 px-4 text-sm border-b border-zinc-700">
                 <button
                   className={`flex-1 text-center rounded-full py-2 border ${
                     isBuy ? " border-lime-200 text-lime-200" : " border-transparent text-zinc-400"
@@ -748,8 +800,8 @@ const Token = () => {
                   >
                     Enter Quantity
                   </label>
-                  <div className="flex bg-zinc-800 rounded-lg border border-zinc-600 focus-within:border-lime-200">
-                    <span className="inline-flex items-center px-3 m-1.5 my-2 text-sm font-medium text-zinc-200  border-r border-zinc-600">
+                  <div className="flex rounded-lg border border-zinc-700 focus-within:border-lime-200">
+                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-700">
                       {tokenDetails.symbol.toUpperCase()}
                     </span>
                     <input
@@ -771,8 +823,8 @@ const Token = () => {
                   >
                     Total Value
                   </label>
-                  <div className="flex bg-zinc-800 rounded-lg border border-zinc-600 focus-within:border-lime-200">
-                    <span className="inline-flex items-center px-3 m-1.5 my-2 text-sm font-medium text-zinc-200  border-r border-zinc-600">
+                  <div className="flex rounded-lg border border-zinc-700 focus-within:border-lime-200">
+                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-700">
                       INR
                     </span>
                     <input
@@ -792,7 +844,7 @@ const Token = () => {
                 {userData ? (
                   isBuy ? (
                     <>
-                      <div className="px-4 text-zinc-400 flex justify-between text-sm">
+                      <div className="px-4 text-zinc-400 flex justify-between text-xs">
                         <p className="mb-2">INR Balance</p>
                         <p>₹{userData.cash && formatFloat(userData.cash, 2)}</p>
                       </div>
@@ -818,7 +870,7 @@ const Token = () => {
                     </>
                   ) : (
                     <>
-                      <div className="px-4 text-zinc-400 flex justify-between text-sm">
+                      <div className="px-4 text-zinc-400 flex justify-between text-xs">
                         <p className="mb-2">
                           {tokenDetails.symbol.toUpperCase()} Balance
                         </p>
@@ -832,7 +884,7 @@ const Token = () => {
                       <div className="p-4 py-6">
                       <button
                         type="button"
-                        className="rounded-lg bg-lime-200 text-zinc-900 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
+                        className="rounded-lg bg-lime-200  text-zinc-900 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium text-sm px-5 py-2.5 text-center"
                         onClick={openModal}
                       >
                         Sell
@@ -845,7 +897,7 @@ const Token = () => {
                   <div className="p-4 py-6">
                   <button
                     type="button"
-                    className="text-zinc-800 bg-lime-200 w-full focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    className="text-zinc-800 bg-lime-200 w-full focus:ring-4 focus:outline-none focus:ring-lime-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                     onClick={onNonUserLoginBtnClick}
                   >
                     Login to buy/sell {tokenDetails.symbol.toUpperCase()}
@@ -858,14 +910,14 @@ const Token = () => {
             {transactionDetails &&
               transactionDetails.length !== 0 &&
               transactionDetails[0] !== undefined && (
-                <div className="border border-zinc-600 rounded-lg my-4 pb-4">
-                  <h3 className="text-medium font-medium p-4 text-zinc-400 border-b border-zinc-600">
+                <div className="border border-zinc-700 rounded-lg my-4 pb-4">
+                  <h3 className="text-md p-4 text-zinc-400 border-b border-zinc-700">
                     Recent Transaction
                   </h3>
 
                   {transactionDetails.map((transaction) => (
                     <div
-                      className="border-b border-zinc-600 p-4"
+                      className="border-b text-sm border-zinc-700 p-4"
                       key={transaction.txn_timestamp}
                     >
                       <div className="flex items-center">
@@ -928,19 +980,19 @@ const Token = () => {
           size="md"
           dismissible={true}
           onClose={onModalClose}
-          className="bg-zinc-900"
+          className="bg-zinc-900 rounded-lg"
         >
-          <Modal.Header className="bg-zinc-800 border dark:border-zinc-600">Confirm Order</Modal.Header>
-          <Modal.Body className="bg-zinc-800 text-zinc-200 border-x dark:border-zinc-600">
+          <Modal.Header className="bg-zinc-800 border text-md dark:border-zinc-700">Confirm Order</Modal.Header>
+          <Modal.Body className="bg-zinc-800 text-zinc-200 border-x dark:border-zinc-700">
             <div className="space-y-2">
-              <p className="text-md font-medium">
+              <p className="">
                 {isBuy
                   ? `Buy ${tokenDetails.name}`
                   : `Sell ${tokenDetails.name}`}
               </p>
               <div className="flex justify-between">
-                <p>Price</p>
-                <p>
+                <p className="text-sm">Price</p>
+                <p className="text-sm">
                   {tokenDetails.market_data.current_price.inr.toLocaleString(
                     "en-IN"
                   )}{" "}
@@ -948,22 +1000,22 @@ const Token = () => {
                 </p>
               </div>
               <div className="flex justify-between">
-                <p>Quantity</p>
-                <p>
+                <p className="text-sm">Quantity</p>
+                <p className="text-sm">
                   {parseFloat(quantity.toFixed(3))}{" "}
                   {tokenDetails.symbol.toUpperCase()}
                 </p>
               </div>
               <div className="flex justify-between">
-                <p>Total</p>
-                <p>
+                <p className="text-sm">Total</p>
+                <p className="text-sm">
                   {parseFloat(totalValue.toFixed(2)).toLocaleString("en-IN")}{" "}
                   INR
                 </p>
               </div>
             </div>
           </Modal.Body>
-          <Modal.Footer className="bg-zinc-800 border dark:border-zinc-600">
+          <Modal.Footer className="bg-zinc-800 border dark:border-zinc-700">
             <button
               data-modal-hide="confirm-modal"
               type="button"
@@ -1023,90 +1075,6 @@ const Token = () => {
         </div>
       )}
 
-      {/* 
-      <Toast>
-          <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
-            
-          </div>
-          <div className="ml-3 text-sm font-normal">
-            Item moved successfully.
-          </div>
-      </Toast> */}
-
-      {/* <!-- Small Modal --> */}
-
-      {ismodalActive && (
-        <div
-          id="confirm-modal"
-          tabIndex="-1"
-          className="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full bg-opacity-75"
-        >
-          <div className="relative w-full h-full max-w-sm md:h-auto">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-              <div className="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
-                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-                  Confirm Order
-                </h3>
-                <button
-                  type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-hide="confirm-modal"
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                  <span className="sr-only">Close modal</span>
-                </button>
-              </div>
-
-              <div className="p-6 space-y-6">
-                <p className="text-md font-medium">
-                  {isBuy
-                    ? `Buy ${tokenDetails.name}`
-                    : `Sell ${tokenDetails.name}`}
-                </p>
-                <div className="flex justify-between">
-                  <p>Price</p>
-                  <p>
-                    ₹
-                    {tokenDetails.market_data.current_price.inr.toLocaleString(
-                      "en-IN"
-                    )}
-                  </p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Quantity</p>
-                  <p>{tokenDetails.symbol.toUpperCase()}</p>
-                </div>
-                <div className="flex justify-between">
-                  <p>Total</p>
-                  <p>₹{totalValue.toLocaleString("en-IN")}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button
-                  data-modal-hide="confirm-modal"
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
-                >
-                  {isBuy ? "Buy" : "Sell"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

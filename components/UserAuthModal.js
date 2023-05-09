@@ -31,7 +31,7 @@ const UserAuthModal = () => {
         closable="true"
         popup={true}
         onClose={onClose}
-        className='bg-zinc-900 border border-zinc-600'
+        className='bg-zinc-900 border border-zinc-700'
     >
     <Modal.Header className='bg-zinc-800'/>
     <Modal.Body className='bg-zinc-800'>

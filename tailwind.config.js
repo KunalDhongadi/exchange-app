@@ -12,7 +12,11 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        'zinc-750' : '#2C2C2F'
+        'zinc-750' : '#2C2C2F',
+        'background' : '#232324'
+      },
+      fontFamily:{
+        
       }
     },
   },
