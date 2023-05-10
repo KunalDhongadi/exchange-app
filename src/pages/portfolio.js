@@ -54,7 +54,7 @@ const Portfolio = () => {
     }
     if (userData) {
       fetchActive();
-      console.log("useEffect for getting addtional Details");
+      // console.log("useEffect for getting addtional Details");
     }
   }, [userData]);
 
@@ -170,19 +170,19 @@ const Portfolio = () => {
                 <div className="table w-full">
                   <div className="table-header-group">
                     <div className="table-row">
-                      <div className="table-cell text-xs border-b border-r bg-zinc-800 md:bg-inherit md:border-x-0 sticky left-0 md:static dark:border-zinc-700 text-sm font-medium px-6 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b border-r bg-zinc-800 md:bg-inherit md:border-x-0 sticky left-0 md:static dark:border-zinc-700 font-medium px-6 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Asset name
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 text-sm font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Price
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 text-sm font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Holdings
                       </div>
-                      <div className="table-cell text-xs border-b whitespace-nowrap dark:border-zinc-700 text-sm font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b whitespace-nowrap dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Invested INR
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 text-sm font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Returns
                       </div>
                     </div>

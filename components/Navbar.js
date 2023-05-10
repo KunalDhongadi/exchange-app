@@ -17,7 +17,7 @@ const Navbar = () => {
 
   useEffect(() => {
 
-    console.log("useEffect- navbar.js");
+    // console.log("useEffect- navbar.js");
   }, []);
 
   // console.log("user", userData);
@@ -55,7 +55,7 @@ const Navbar = () => {
   // }
 
   const onMenuExpand = () => {
-    console.log("menu clicked");
+    // console.log("menu clicked");
     setShowMenu(true);
   };
 
@@ -193,7 +193,7 @@ const Navbar = () => {
 
               <div className="mx-4 py-3 mt-0 border-t border-zinc-600 text-zinc-400">
                 <div className="text-xs">INR Balance</div>
-                <div className="text-sm">₹{userData.cash.toFixed(1)}</div>
+                <div className="text-sm">₹{parseFloat(userData.cash.toFixed(1)).toLocaleString("en-IN")}</div>
               </div>
 {/* 
               <ul

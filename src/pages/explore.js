@@ -261,21 +261,21 @@ const Explore = () => {
   useEffect(() => {
     if(userData){
       fetchWatchlisted();
-      console.log("------getWatchlisted useEffect in explore page-------");
+      // console.log("------getWatchlisted useEffect in explore page-------");
     }
   },[userData]);
 
 
   useEffect(() => {
     setpage(1);
-    console.log("------setPage useEffect in explore page-------");
+    // console.log("------setPage useEffect in explore page-------");
   }, []);
 
   useEffect(() => {
       if(tokens===undefined || tokens && tokens.length !== page*10 || tokens===null){
         setIsLoading(true);
         fetchTokens();
-        console.log("------fetchTokens useEffect in explore page-------");
+        // console.log("------fetchTokens useEffect in explore page-------");
       }
   }, [page, tokens]);
 
@@ -284,30 +284,18 @@ const Explore = () => {
     if(userData !== undefined && userDataRef.current === (userData===null)){
       setTokens(null);
       userDataRef.current = !userDataRef.current;
-      console.log("inside thitsfds");
+      // console.log("inside thitsfds");
     }
   },[userData]);
 
-  // useEffect(() => {
-  //   if(tokens === null){
-  //     setIsLoading(true);
-  //     fetchTokens();
-  //   }
-  // }, [tokens])
-  
-
-
   // console.log("tokens---", tokens);
   // console.log("watchlisted---", watchlisted);
-
-  console.log("udr",userDataRef);
   
   const loadMore = () => {
     setpage(page + 1);
-    console.log("The page is now ", page);
+    // console.log("The page is now ", page);
   };
 
-  console.log("outside", isLoading);
 
   if(limitExceeded){
     return(

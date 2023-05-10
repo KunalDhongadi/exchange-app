@@ -31,14 +31,13 @@ const transactions = () => {
   // console.log("user txn", userData);
 
   useEffect(() => {
-    console.log("inside txn useff");
-    console.log("userData-", userData);
+    // console.log("userData-", userData);
     if (userData !== undefined && userData === null) {
       router.push("/explore");
     }
     if(userData){
       fetchtransactions();
-      console.log("useEffect for getting transactions page");
+      // console.log("useEffect for getting transactions page");
     }
   }, [userData]);
 
@@ -130,6 +129,7 @@ const transactions = () => {
                           <div className="flex w-max">
                           <Image
                             loader={() => transaction.image_url}
+                            unoptimized={true}
                             src={transaction.image_url}
                             alt={transaction.name}
                             width={24}

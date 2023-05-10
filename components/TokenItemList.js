@@ -17,6 +17,7 @@ const TokenItemList = ({ token, userData }) => {
           <div className="flex items-baseline w-max">
             <Image
               loader={() => token.image}
+              unoptimized={true}  
               height={32}
               width={32}
               src={token.image}

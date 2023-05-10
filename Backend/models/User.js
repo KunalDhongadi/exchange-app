@@ -18,7 +18,7 @@ const UserSchema = new Schema({
   cash:{
     type: Number,
     required: true,
-    default : 50000
+    default : 100000
   }, 
   watchlist: [
     {

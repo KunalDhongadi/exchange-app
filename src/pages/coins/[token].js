@@ -235,11 +235,11 @@ const Token = () => {
   useEffect(() => {
     if(query && isLoggedIn!==undefined && !tokenFetched){
       fetchTokens(query);
-      console.log(">>>useEffect fetchTokens() <<<<");
+      // console.log(">>>useEffect fetchTokens() <<<<");
       setTokenFetched(true);
     }
     if(isLoggedIn === true && loggedInRef.current === false){
-      console.log("here now");
+      // console.log("here now");
       fetchTokens(query);
     }
   }, [query,isLoggedIn, tokenFetched, loggedInRef.current]);
@@ -250,7 +250,7 @@ const Token = () => {
       if (tokenDetails !== undefined && isLoggedIn === true && !detailsFetched) {
         fetchdetails(tokenDetails.id);
         setDetailsFetched(true);
-        console.log("+++UseEffect fetchdetails() +++");
+        // console.log("+++UseEffect fetchdetails() +++");
       }
     }
     

@@ -56,7 +56,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
         if(!isTokenPage){
           const index = tokens.findIndex(token => token.id === token_id);
           const tokenObj = tokens.filter(token => token.id === token_id);
-          console.log("The token is ", tokenObj);
+          // console.log("The token is ", tokenObj);
           if(index !== -1){
             const updatedTokenList = [...tokens];
             updatedTokenList[index].iswatchlisted = json.watchlisted;
@@ -72,7 +72,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
       
       const myTimeout = setTimeout(updateState, 1000);
       
-      console.log(token_id + " is now " + watchlistedCoin);
+      // console.log(token_id + " is now " + watchlistedCoin);
      
   }
 
