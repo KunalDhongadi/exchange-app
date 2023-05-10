@@ -187,7 +187,7 @@ const Token = () => {
   //Fetch coin details
   const fetchTokens = async (token) => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchtoken/${token}`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchtoken/${token}`,
       {
         method: "GET",
         headers: {
@@ -208,7 +208,7 @@ const Token = () => {
   //To fetch details such as available qty and transactions
   const fetchdetails = async (token_id) => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchdetails?token_id=${token_id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchdetails?token_id=${token_id}`,
       {
         method: "GET",
         headers: {
@@ -375,7 +375,7 @@ const Token = () => {
     // console.log("bodyyd", body);
     if (isBuy) {
       e.target.innerText = "Buying..."
-      const response = await fetch(`http://localhost:5000/api/token/buy`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}token/buy`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -448,7 +448,7 @@ const Token = () => {
       }
     } else {
       e.target.innerText = "Selling..."
-      const response = await fetch(`http://localhost:5000/api/token/sell`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}token/sell`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -613,7 +613,7 @@ const Token = () => {
           </ol>
         </nav>
         <div className="token-page min-h-[70vh] max-w-7xl px-2 sm:px-6 lg:px-8 py-2 my-3 mx-auto flex flex-wrap items-start justify-between">
-          <div className="lg:w-4/6 md:w-3/5 md:pr-8 lg:pr-8 pr-0">
+          <div className="lg:w-4/6 md:w-3/5 md:pr-8 lg:pr-8 w-full pr-0">
             <div className="flex justify-between flex-row">
               <div className="flex items-center">
                 <img

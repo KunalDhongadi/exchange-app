@@ -209,7 +209,7 @@ const Explore = () => {
 
   const fetchWatchlisted = async () => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchwatchlisted`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchwatchlisted`,
       {
         method: "GET",
         headers: {
@@ -226,7 +226,7 @@ const Explore = () => {
 
   const fetchTokens = async () => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchalltokens?page=${page}`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchalltokens?page=${page}`,
       {
         method: "GET",
         headers: {
@@ -319,7 +319,7 @@ const Explore = () => {
   }
 
   let justBtn =
-    "px-5 py-2 text-sm focus:outline-none text-center";
+    "px-5 py-2 pb-3 text-sm focus:outline-none text-center";
 
   let selectedBtnClass = justBtn + " text-zinc-200 mr-2 border-b border-zinc-200";
 
@@ -338,7 +338,7 @@ const Explore = () => {
 
               <button
                 type="button"
-                className={`${unselectedBtnClass} inline-flex`}
+                className={`${unselectedBtnClass} inline-flex justify-center`}
                 onClick={watchlistBtn}
               >
                 <svg
@@ -346,7 +346,7 @@ const Explore = () => {
                   width="16"
                   height="16"
                   fill="currentColor"
-                  className="w-4 h-4 mr-2 -ml-1"
+                  className="w-4 h-4 mr-2"
                   viewBox="0 0 16 16"
                 >
                   <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />
@@ -368,14 +368,14 @@ const Explore = () => {
 
               <button
                 type="button"
-                className={`${selectedBtnClass} inline-flex`}
+                className={`${selectedBtnClass} inline-flex items-stretch justify-center`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="16"
                   fill="currentColor"
-                  className="w-4 h-4 mr-2 -ml-1"
+                  className="w-4 h-4 mr-2"
                   viewBox="0 0 16 16"
                 >
                   <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />

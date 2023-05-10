@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { useContext, useState } from "react";
 import WatchList from "./WatchList";
+import Image from "next/image";
 
 const TokenItemList = ({ token, userData }) => {
   const tokenUrl = `coins/${token.id}`;
@@ -14,7 +15,10 @@ const TokenItemList = ({ token, userData }) => {
       </div>
       <div className="table-cell pr-6 border-b border-x bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-700 dark:border-zinc-700 p-4">
           <div className="flex items-baseline w-max">
-            <img
+            <Image
+              loader={() => token.image}
+              height={32}
+              width={32}
               src={token.image}
               alt={token.name}
               className="self-start w-8 h-8 rounded-full mx-1"

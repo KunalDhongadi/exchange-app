@@ -343,6 +343,7 @@ const Navbar = () => {
                   : " text-zinc-200 no-underline"
               }`}
               aria-current="page"
+              onClick={() => setShowMenu(false)}
             >
               Explore
             </Link>
@@ -356,6 +357,7 @@ const Navbar = () => {
                       ? " text-lime-200 border border-zinc-700 rounded-md"
                       : " text-zinc-200 no-underline"
                   }`}
+                  onClick={() => setShowMenu(false)}
                 >
                   Portfolio
                 </Link>
@@ -367,6 +369,7 @@ const Navbar = () => {
                       ? " text-lime-200 border border-zinc-700 rounded-md"
                       : " text-zinc-200 no-underline"
                   }`}
+                  onClick={() => setShowMenu(false)}
                 >
                   Transactions
                 </Link>

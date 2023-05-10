@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <>
-      <h1 className='text-red-50'>Hello der</h1>
+      {/* <h1 className='text-red-50'>Hello der</h1> */}
       {/* <button onClick={handleLoadMore}>Click to load more</button> */}
     </>
   )

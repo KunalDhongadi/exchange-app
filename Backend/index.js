@@ -4,9 +4,15 @@ const cors = require('cors');
 
 connectToMongo();
 
-const app = express()
-const port = 5000
+const app = express();
+// const port = 5000
 
+const dotenv = require('dotenv');
+const path = require('path');
+
+dotenv.config({
+  path: path.join(__dirname, '.env'),
+});
 
 
 app.use(cors());
@@ -17,9 +23,11 @@ app.use('/api/exchange', require('./routes/exchange'));
 app.use('/api/token', require('./routes/token'));
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+if(process.env.API_PORT){
+  app.listen(process.env.API_PORT, () => {
+    console.log(`the-exchange-app listening on port ${process.env.API_PORT}`)
+  });
+}

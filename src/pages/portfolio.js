@@ -21,8 +21,10 @@ const Portfolio = () => {
   });
 
   const fetchActive = async () => {
+
+
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchactive`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchactive`,
       {
         method: "GET",
         headers: {
@@ -44,6 +46,9 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
+    
+    // console.log(process.env);
+
     if (userData === null) {
       router.push("/explore");
     }
@@ -265,13 +270,15 @@ const Portfolio = () => {
                 </div>
               </div>
             </div>
-            <div className="md:w-full w-full my-4 overflow-x-auto">
+            <div className="md:w-full w-full my-4">
               <p className="text-md text-zinc-200 py-2">Insights</p>
 
-              <PiechartComponent
-                portfolioValue={details.portfolioValue}
-                tokens={tokens}
-              />
+              <div className="overflow-x-auto">
+                <PiechartComponent
+                  portfolioValue={details.portfolioValue}
+                  tokens={tokens}
+                />
+              </div>
             </div>
           </div>
         </>

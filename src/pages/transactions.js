@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/userContext";
 import { useRouter } from "next/router";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import Image from "next/image";
 
 const transactions = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -13,12 +14,13 @@ const transactions = () => {
   
   const fetchtransactions = async () => {
     const response = await fetch(
-      `http://localhost:5000/api/exchange/fetchtransactions`,
+      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchtransactions`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "auth-token": localStorage.getItem("token"),
+          "Access-Control-Max-Age":600
         },
       }
     );
@@ -126,9 +128,12 @@ const transactions = () => {
                           className="table-cell border-b border-r bg-background md:bg-background border-zinc-700 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
                         >
                           <div className="flex w-max">
-                          <img
+                          <Image
+                            loader={() => transaction.image_url}
                             src={transaction.image_url}
                             alt={transaction.name}
+                            width={24}
+                            height={24}
                             className="self-center w-6 h-6 rounded-full mx-1"
                           />
 
