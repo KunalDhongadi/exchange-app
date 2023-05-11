@@ -384,7 +384,7 @@ const Explore = () => {
       )}
 
       {allTokens && 
-      <div className="flex justify-center pb-6">
+      <div className="flex justify-center mt-3 pb-6">
         <button
           disabled={isLoading}
           type="button"
