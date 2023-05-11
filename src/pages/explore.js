@@ -226,7 +226,7 @@ const Explore = () => {
 
   const fetchTokens = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchalltokens?page=${page}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/exchange/fetchalltokens?page=${page}`,
       {
         method: "GET",
         headers: {

@@ -33,7 +33,7 @@ const Signup = () => {
 
     const signupBtn = async(e) => {
         e.preventDefault();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/createuser`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/createuser`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -24,7 +24,7 @@ export default function MyApp({ Component, pageProps }) {
   // const [tokenDetails, setTokenDetails] = useState([]);
 
   const fetchUser = async(authToken) =>{
-    const response = await fetch('http://localhost:5000/api/auth/getuser', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/getuser`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -14,7 +14,7 @@ const transactions = () => {
   
   const fetchtransactions = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchtransactions`,
+      `${process.env.NEXT_PUBLIC_API_URL}/exchange/fetchtransactions`,
       {
         method: "GET",
         headers: {

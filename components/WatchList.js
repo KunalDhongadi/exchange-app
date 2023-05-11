@@ -39,7 +39,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
       return;
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}token/watchlist`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token/watchlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -24,7 +24,7 @@ const Portfolio = () => {
 
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}exchange/fetchactive`,
+      `${process.env.NEXT_PUBLIC_API_URL}/exchange/fetchactive`,
       {
         method: "GET",
         headers: {
