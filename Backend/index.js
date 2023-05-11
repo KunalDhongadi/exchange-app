@@ -31,3 +31,5 @@ if(process.env.API_PORT){
     console.log(`the-exchange-app listening on port ${process.env.API_PORT}`)
   });
 }
+
+module.exports = app;
