@@ -2,17 +2,25 @@ import React, { useContext, useEffect, useState } from 'react'
 import TokenContext from '../context/tokenContext';
 import ModalContext from '../context/modalContext';
 import { motion } from "framer-motion"
+import Toast from './Toast';
+import { useQueryClient } from '@tanstack/react-query';
+import UserContext from '../context/userContext';
 
 const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
+
+  const { userData } = useContext(UserContext);
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const queryClient = useQueryClient();
 
   const { showModal, setShowModal, isLogin, setIsLogin } =
     useContext(ModalContext);
 
 
-
-
   let tokens, setTokens, watchlisted,setWatchlisted;
-  if(!isTokenPage){
+  if(true){
     const context = useContext(TokenContext)
     tokens= context.tokens;
     setTokens = context.setTokens;
@@ -24,9 +32,18 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
 
   // console.log("tokens wl", token_id);
 
+  // useEffect(() => {
+  //   setWatchlistedCoin(isWatchlisted);
+  // }, [isWatchlisted])
+
+  //if user logs out, change state
   useEffect(() => {
-    setWatchlistedCoin(isWatchlisted);
-  }, [isWatchlisted])
+    if(userData){
+      setWatchlistedCoin(isWatchlisted);
+    }else{
+      setWatchlistedCoin(false);
+    }
+  }, [userData, isWatchlisted])
     
 
   const watchlistToken = async(e) => {
@@ -50,29 +67,34 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
       const json = await response.json();
 
       setWatchlistedCoin(json.watchlisted);
+      let coinName = token_id.charAt(0).toUpperCase() + token_id.slice(1);
+      if(json.watchlisted){
+        setToastMessage(coinName + " added to watchlist.");
+      }else{
+        setToastMessage(coinName + " removed from watchlist.");
+      }
+      setShowToast(true);
+      
       
       const updateState = () => {
         // if not a token page. i.e. If on explore page, watchlist the coin in state
-        if(!isTokenPage){
+        
+          
           const index = tokens.findIndex(token => token.id === token_id);
           const tokenObj = tokens.filter(token => token.id === token_id);
-          // console.log("The token is ", tokenObj);
-          if(index !== -1){
-            const updatedTokenList = [...tokens];
-            updatedTokenList[index].iswatchlisted = json.watchlisted;
-            setTokens(updatedTokenList);
-          }
+   
+          // if(index !== -1){
+          //   const updatedTokenList = [...tokens];
+          //   updatedTokenList[index].iswatchlisted = json.watchlisted;
+          //   setTokens(updatedTokenList);
+          // }
           if(json.watchlisted){
             setWatchlisted([...watchlisted, tokenObj[0]]);
           }else{
             setWatchlisted(watchlisted.filter(w => w.id!==token_id));
           }
-        }
       }  
-      
-      const myTimeout = setTimeout(updateState, 1000);
-      
-      // console.log(token_id + " is now " + watchlistedCoin);
+      updateState();
      
   }
 
@@ -96,6 +118,9 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
       </motion.svg> 
     }
     </motion.div>
+
+    <Toast showToast={showToast} setShowToast={setShowToast} toastMessage={toastMessage}/>
+
     </>
   )
 }

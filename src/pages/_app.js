@@ -2,11 +2,14 @@ import '@/styles/globals.css'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import UserContext from '../../context/userContext'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import App from 'next/app'
 import ModalContext from '../../context/modalContext'
 import { useRouter } from 'next/router'
 import LoadingBar from 'react-top-loading-bar'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import TokenContext from '../../context/tokenContext'
 
 export default function MyApp({ Component, pageProps }) {
 
@@ -16,9 +19,14 @@ export default function MyApp({ Component, pageProps }) {
   const [showModal, setShowModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
+  const [tokens, setTokens] = useState([]);
+  const [watchlisted, setWatchlisted] = useState([]);
+
   const [progress, setProgress] = useState(0);
   const router = useRouter();
 
+
+  const queryClient = useMemo(()=> new QueryClient(), []);
   
 
   // const [tokenDetails, setTokenDetails] = useState([]);
@@ -32,7 +40,6 @@ export default function MyApp({ Component, pageProps }) {
       },
     });
     const user = await response.json();
-    // console.log("the response is app.js", user);
     if(user.success){
       setUserData(user.user);
     }else{
@@ -41,6 +48,7 @@ export default function MyApp({ Component, pageProps }) {
     
   }
 
+  //handle progress for progress bar
   useEffect(() => {
     router.events.on('routeChangeStart', () =>{
       setProgress(20);
@@ -51,10 +59,12 @@ export default function MyApp({ Component, pageProps }) {
     });
   },[])
   
+
+  //check if token exists
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      console.log("token set");
+      // console.log("token set");
       setAuthtoken(token);
     }else{
       setUserData(null);
@@ -62,27 +72,44 @@ export default function MyApp({ Component, pageProps }) {
   }, []);
 
 
+  //if authtoken value is changed, get the user details
   useEffect(() => {
     if(authtoken){
       fetchUser(authtoken);
-      console.log(".......UseEffect fetchUser(_app.js)................");
+      // console.log(".......UseEffect fetchUser(_app.js)................");
     }else if(authtoken === null){
-      console.log("userdata null");
+      // console.log("userdata null");
       setUserData(null);
+      queryClient.removeQueries(["watchlisted-coins"])
     }
   }, [authtoken]);
 
 
+  //so that the bg doesn't scroll when modal is opened
+  useEffect(() => {
+    if (document) {
+      document.body.style.overflow = showModal ? "hidden" : "auto";
+    }
+  }, [showModal]);
+
+
+
   return (
     <>
-    <UserContext.Provider value={{userData, setUserData, authtoken, setAuthtoken}}>
-      <ModalContext.Provider value={{showModal, setShowModal, isLogin, setIsLogin}}>
-        <LoadingBar color={"#d9f99d"} progress={progress} waitingTime={400} onLoaderFinished={()=>setProgress(0)} />
-        <Navbar/>
-        <Component {...pageProps} />
-        <Footer/>
-      </ModalContext.Provider>
-    </UserContext.Provider>  
+    <QueryClientProvider client={queryClient}>
+      <UserContext.Provider value={{userData, setUserData, authtoken, setAuthtoken}}>
+        <ModalContext.Provider value={{showModal, setShowModal, isLogin, setIsLogin}}>
+          <TokenContext.Provider value={{ tokens, setTokens, watchlisted, setWatchlisted }}>
+          <LoadingBar color={"#d9f99d"} progress={progress} waitingTime={400} onLoaderFinished={()=>setProgress(0)} />
+          <Navbar/>
+          <Component {...pageProps} />
+          <Footer/>
+          </TokenContext.Provider>
+        </ModalContext.Provider>
+      </UserContext.Provider>  
+      <ReactQueryDevtools/>
+    </QueryClientProvider>
+    
     </>
   )
 }

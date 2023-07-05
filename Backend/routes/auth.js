@@ -10,7 +10,7 @@ const { body, validationResult } = require('express-validator');
 
 //Route 1:  Create a user using post & no login required.
 router.post("/createuser",[
-    body('username','Enter a valid username').isLength({min:3}),
+    body('username','Enter a valid username (The username should atleast have 3 words)').isLength({min:3}),
     body('email', 'Enter a valid email').isEmail(),
     body('password', 'The password should be 5 characters long').isLength({min:5})
     ],

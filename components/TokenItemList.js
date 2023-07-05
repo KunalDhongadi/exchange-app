@@ -1,12 +1,21 @@
 import Link from "next/link";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import WatchList from "./WatchList";
 import Image from "next/image";
+import TokenContext from "../context/tokenContext";
 
 const TokenItemList = ({ token, userData }) => {
+
   const tokenUrl = `coins/${token.id}`;
 
   // console.log("sfdsf", token);
+
+  
+  // useEffect(() => {
+    
+  //   console.log("the tokenitem- ",token);
+  
+  // }, [token])
 
   return (
     <Link href={tokenUrl} className="table-row rounded-md hover:bg-zinc-800 text-white">

@@ -10,9 +10,8 @@ const router = express.Router();
 
 // const { body, validationResult } = require("express-validator");
 
-// Route 1: Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
+// Route 1: (Not in use) Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
 router.get("/fetchalltokens", async (req, res) => {
-
   let user = null;
   const token =  req.header('auth-token');
   if(token){
@@ -23,24 +22,22 @@ router.get("/fetchalltokens", async (req, res) => {
       user = null;
     }
   }
-
   try {
     const {page} = req.query;
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=10&page=${page}&sparkline=false`;
     const response = await fetch(url);
     const tokens = await response.json();
 
-    // console.log("tokens", tokens);
-
     if(tokens.status && tokens.status.error_code === 429){
       res.json({"status": 429, "message":"Exceeded the limit"})
-    }else{
+    }
+    else{
       if(user){
         const fetchedUser = await User.findById(user.id);
         tokens.forEach(token => {
             token.iswatchlisted =  fetchedUser.watchlist.includes(token.id);
         });
-    }
+      }
 
     res.json(tokens);
     }
@@ -55,14 +52,15 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
   try {
     const fetchedUser = await User.findById(req.user.id);
     if(fetchedUser.watchlist.length === 0){
-      res.json(null);
+      res.json([]);
       return;
     }
     const queryParams = fetchedUser.watchlist.join("%2c%20");
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&order=market_cap_desc&sparkline=false`;
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
     console.log("url-",url);
     const response = await fetch(url);
     const tokens = await response.json();
+    console.log("tokens wtchlisted-",tokens);
     tokens.forEach(token => {
       token.iswatchlisted =  true;
     });
@@ -73,7 +71,7 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
   }
 });
 
-// Route 3: Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
+// Route 3: (Not in use) Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
 router.get("/fetchtoken/:symbol", async (req, res) => {
 
   let user = null;
@@ -148,10 +146,10 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
     }
 
 
-    if(user){
-        const fetchedUser = await User.findById(user.id);
-        token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); 
-    }
+    // if(user){
+    //     const fetchedUser = await User.findById(user.id);
+    //     token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); 
+    // }
 
     res.status(200).json(token);
 
@@ -226,16 +224,21 @@ router.get("/fetchdetails", fetchUser,  async (req, res) => {
     const transactions = await Transaction.find({ user: req.user.id, token_id: token_id}).sort("-txn_timestamp").lean();
 
     console.log("blafs" ,activeTokens);
-    console.log("blafs txns" ,transactions);
+    // console.log("blafs txns" ,transactions);
 
     // Adding average token cost
-    for (let i = 0; i < activeTokens.length; i++) {
-      const averageCost = await getAverageCost(req.user.id, activeTokens[i].token_id);
-      activeTokens[i].averageCost = averageCost;      
+    // for (let i = 0; i < activeTokens.length; i++) {
+    if(activeTokens.length > 0){
+      const averageCost = await getAverageCost(req.user.id, activeTokens[0].token_id);
+      activeTokens[0].averageCost = averageCost;      
     }
+    // }
+
+    const fetchedUser = await User.findById(req.user.id);
+    const iswatchlisted =  fetchedUser.watchlist.includes(token_id); 
 
     // console.log(req.params.symbol);
-    res.json({activeTokens, transactions});
+    res.json({activeTokens, transactions, iswatchlisted});
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occured while fetching details");

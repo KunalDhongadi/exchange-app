@@ -46,8 +46,6 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
-    
-    // console.log(process.env);
 
     if (userData === null) {
       router.push("/explore");
@@ -78,14 +76,21 @@ const Portfolio = () => {
   };
 
   if (tokens === undefined) {
-    return <LoadingSpinner />;
+    return(
+      <div className="py-8">
+        <LoadingSpinner/>
+      </div>
+    );
   }
 
   if (tokens.length < 1) {
     return (
-      <h3 className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex my-6 text-zinc-200">
-        Your portfolio is empty.
-      </h3>
+      <div className="mx-auto max-w-7xl my-10 sm:px-6 lg:px-8">
+        <p className="py-8 text-center text-zinc-200">
+          Your portfolio is currently empty.
+        </p>
+      </div>
+      
     );
   }
 
@@ -93,7 +98,7 @@ const Portfolio = () => {
     <>
       {userData && (
         <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
+          <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
             <div className="w-full flex flex-col md:flex-row gap-3 my-4">
               <div className="w-full h-24 flex p-4 rounded-xl bg-lime-200">
                 <div className="flex-row self-center">
@@ -160,7 +165,7 @@ const Portfolio = () => {
             </div>
           </div>
 
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
+          <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
             <div className="lg:w-full md:w-full w-full">
               <p className="text-md text-zinc-200 py-4">
                 All Assets

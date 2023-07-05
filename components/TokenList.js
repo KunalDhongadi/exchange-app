@@ -8,9 +8,13 @@ const TokenList = ({ tokenList, watchlisted }) => {
   const { tokens } = useContext(TokenContext);
   const [isLoading, setIsLoading] = useState(true);
 
+  // useEffect(() => {
+  //   console.log("the tokenlist- ", tokenList);
+  // }, [tokenList, tokens]);
+
   return (
     <>
-      {tokenList && tokenList.length !== 0 ? (
+      {tokenList && tokenList !== undefined && tokenList.length !== 0 ? (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
           <div className="pb-4 border border-zinc-700 rounded-lg overflow-x-auto">
             <div className="table w-full">
@@ -35,6 +39,23 @@ const TokenList = ({ tokenList, watchlisted }) => {
                 </div>
               </div>
 
+              {/* <div className="table-row-group">
+                {tokenList &&
+                  tokenList.pages.map((page) => {
+                    // console.log("page-",page);
+                    return page.map((token) => {
+                      console.log("token-", token);
+                      return (
+                        <TokenItemList
+                          token={token}
+                          userData={userData}
+                          key={token.id}
+                        />
+                      );
+                    });
+                  })}
+              </div> */}
+
               <div className="table-row-group">
                 {tokenList &&
                   tokenList.map((token) => (
@@ -50,8 +71,10 @@ const TokenList = ({ tokenList, watchlisted }) => {
         </div>
       ) : (
         watchlisted && (
-          <div className="mx-auto max-w-7xl px-2 py-8 text-zinc-200 sm:px-6 lg:px-8 font-medium">
-            The Watchlist is empty
+          <div className="mx-auto max-w-7xl my-10 px-2 text-zinc-200 sm:px-6 lg:px-8">
+            <p className="text-center py-8">
+              The Watchlist is empty.
+            </p>
           </div>
         )
       )}

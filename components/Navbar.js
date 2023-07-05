@@ -15,10 +15,7 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  useEffect(() => {
 
-    // console.log("useEffect- navbar.js");
-  }, []);
 
   // console.log("user", userData);
 
@@ -26,6 +23,8 @@ const Navbar = () => {
     useContext(ModalContext);
 
   const menuRef = useRef();
+
+  
 
   const toggleLoginModal = () => {
     setShowModal(true);
@@ -82,6 +81,12 @@ const Navbar = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (document) {
+      document.body.style.overflow = showMenu ? "hidden" : "auto";
+    }
+  }, [showMenu]);
 
   return (
     <>
@@ -329,7 +334,7 @@ const Navbar = () => {
         </div>
         {/* Mobile menu */}
         <div
-          className={`${showMenu ? "block" : "hidden"} sm:hidden`}
+          className={`${showMenu ? "block" : "hidden"} sm:hidden h-screen`}
           id="mobile-menu"
         >
           <div

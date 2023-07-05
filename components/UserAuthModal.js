@@ -7,7 +7,6 @@ import ModalContext from '../context/modalContext';
 const UserAuthModal = () => {
 
 
-    // const[isVisible, setIsVisible] = useState(showModal);
     const {showModal, setShowModal, isLogin, setIsLogin} = useContext(ModalContext);
 
     // console.log("isOpened in userauthmodal", showModal);

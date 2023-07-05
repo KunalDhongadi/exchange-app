@@ -28,10 +28,8 @@ const transactions = () => {
     setTransactions(data);
   };
 
-  // console.log("user txn", userData);
 
   useEffect(() => {
-    // console.log("userData-", userData);
     if (userData !== undefined && userData === null) {
       router.push("/explore");
     }
@@ -41,7 +39,6 @@ const transactions = () => {
     }
   }, [userData]);
 
-  // console.log("transactions", transactions);
 
   const formatDateTime = (type, string) => {
     const date = new Date(string);
@@ -84,14 +81,29 @@ const transactions = () => {
   };
 
   if(transactions === undefined){
-    return <LoadingSpinner/>
+    return(
+      <div className="py-8">
+        <LoadingSpinner/>
+      </div>
+    );
+  }
+
+  if (transactions.length < 1) {
+    return (
+      <div className="mx-auto max-w-7xl my-10 sm:px-6 lg:px-8">
+        <p className="py-8 text-center text-zinc-200">
+          You have no transactions yet.
+        </p>
+      </div>
+      
+    );
   }
 
   return (
     <>
       {userData && (
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          {transactions && transactions.length > 0 ? (
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          {transactions && transactions.length > 0 && (
             <>
           <h1 className="text-md text-zinc-200 py-4">Transactions</h1>
 
@@ -184,9 +196,7 @@ const transactions = () => {
             </div>
           </div>
           </>
-          ):
-          <h3 className="my-6 text-zinc-200">No transactions yet.</h3>
-          }
+          )}
         </div>
       )}
     </>

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import ModalContext from '../context/modalContext';
 import UserContext from '../context/userContext';
+import LoadingSpinner from './LoadingSpinner';
 
 const Login = () => {
 
@@ -11,6 +12,7 @@ const Login = () => {
     
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const[isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const onUsernameChange = (e) =>{
@@ -32,6 +34,7 @@ const Login = () => {
 
     const loginUser = async(guest=false) => {
 
+        setIsLoading(true);
 
         let bodyObj;
         if(guest){
@@ -54,6 +57,7 @@ const Login = () => {
             body: bodyObj,
         });
         const json = await response.json();
+        setIsLoading(false);
         if (json.success) {
             localStorage.setItem("token", json.authToken);
             setAuthtoken(json.authToken);
@@ -94,14 +98,14 @@ const Login = () => {
                     onChange={onPasswordChange} value={password}/>
                 </div>
               
-                <button type="submit" className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-lime-200 dark:focus:ring-lime-200">Login to your account</button>
+                {!isLoading ? <button type="submit" className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-lime-200 dark:focus:ring-lime-200">Login to your account</button> : <LoadingSpinner/>}
                 <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
                     Don't have an account? <a onClick={goToLogin} className="text-zinc-200 hover:underline dark:text-lime-200 cursor-pointer">Create account</a>
                 </div>
             </form>
 
             <h3 className="my-6 text-md font-medium text-gray-900 dark:text-white">Hate the commitment?</h3>
-            <button className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-lime-200 dark:focus:ring-lime-200"onClick={guestLogin}>Continue as guest</button>
+            {!isLoading ? <button className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-lime-200 dark:focus:ring-lime-200"onClick={guestLogin}>Continue as guest</button> : <LoadingSpinner />}
 
 
         </div>
