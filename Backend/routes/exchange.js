@@ -59,6 +59,7 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
     console.log("url-",url);
     const response = await fetch(url);
+    console.log("response-",response);
     const tokens = await response.json();
     console.log("tokens wtchlisted-",tokens);
     tokens.forEach(token => {
