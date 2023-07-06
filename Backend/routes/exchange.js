@@ -8,6 +8,7 @@ const Transactions = require("../models/Transaction");
 const Transaction = require("../models/Transaction");
 const router = express.Router();
 
+
 // const { body, validationResult } = require("express-validator");
 
 // Route 1: (Not in use) Get all the tokens from the external API. Login not required. If loggedIn, get watchlisted tokens.
@@ -25,7 +26,11 @@ router.get("/fetchalltokens", async (req, res) => {
   try {
     const {page} = req.query;
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=10&page=${page}&sparkline=false`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      header : {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+      }
+    });
     const tokens = await response.json();
 
     if(tokens.status && tokens.status.error_code === 429){
@@ -58,7 +63,9 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
     const queryParams = fetchedUser.watchlist.join("%2c%20");
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
     console.log("url-",url);
-    const response = await fetch(url);
+    const response = await fetch(url, {header : {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+    }});
     console.log("response-",response);
     const tokens = await response.json();
     console.log("tokens wtchlisted-",tokens);
