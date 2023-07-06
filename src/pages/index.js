@@ -7,8 +7,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
-const inter = Inter({ subsets: ['latin'] })
-
 export default function Home() {
 
   const router = useRouter();
@@ -25,12 +23,6 @@ export default function Home() {
   //   revalidateIfStale: false,
   //   revalidateOnFocus: false,
   // });
-
-  // useEffect(() => {
-  //   if (newData && newData.length > 0) {
-  //     setData((prevData) => [...prevData, ...newData]);
-  //   }
-  // }, [newData])
 
   // const handleLoadMore = async () => {
   //   const page = data.length / 10 + 1; // assuming 10 items per page
@@ -55,8 +47,11 @@ export default function Home() {
 
   return (
     <>
-      {/* <h1 className='text-red-50'>Hello der</h1> */}
-      {/* <button onClick={handleLoadMore}>Click to load more</button> */}
+    <Head>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet"/>
+    </Head>
     </>
   )
 }

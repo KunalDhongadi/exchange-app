@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import TokenContext from '../../context/tokenContext'
 
+
 export default function MyApp({ Component, pageProps }) {
 
   const[userData, setUserData] = useState();

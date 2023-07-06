@@ -173,7 +173,7 @@ const Navbar = () => {
             ) : (
               <div className="absolute inset-y-0 right-0 items-center sm:hidden flex">
                 <button
-                  className="border border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                  className="border border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-lime-300 rounded-md px-3 py-2 text-sm font-medium"
                   onClick={toggleLoginModal}
                 >
                   Login
@@ -314,7 +314,7 @@ const Navbar = () => {
                 ) : (
                   <div className="flex space-x-4">
                     <button
-                      className="border  border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-white rounded-md px-3 text-sm font-medium"
+                      className="border  border-lime-200 text-lime-200 hover:bg-zinc-800 hover:text-lime-100 rounded-md px-3 text-sm font-medium"
                       onClick={toggleLoginModal}
                     >
                       Login

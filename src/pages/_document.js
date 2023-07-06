@@ -1,7 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 import dynamic from 'next/dynamic.js';
 import Script from 'next/script'
-import { useEffect } from 'react';
 
 
 // const DynamicComponentWithNoSSR = dynamic(

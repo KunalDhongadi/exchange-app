@@ -865,7 +865,8 @@ const Token = () => {
           size="md"
           dismissible={true}
           onClose={onModalClose}
-          className="bg-zinc-900 rounded-lg"
+          className='bg-zinc-900 backdrop-opacity-10 border border-zinc-700'
+          style={{'height': '100%', "backdrop-filter": "blur(6px)"}}
         >
           <Modal.Header className="bg-zinc-800 border text-md dark:border-zinc-700">
             Confirm Order

@@ -16,7 +16,7 @@ module.exports = {
         'background' : '#232324'
       },
       fontFamily:{
-        
+        'noto':['Noto Sans', 'sans-serif']  
       }
     },
   },

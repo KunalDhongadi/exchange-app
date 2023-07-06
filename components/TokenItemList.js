@@ -19,11 +19,11 @@ const TokenItemList = ({ token, userData }) => {
 
   return (
     <Link href={tokenUrl} className="table-row rounded-md hover:bg-zinc-800 text-white">
-      <div className="table-cell border-b border-zinc-700 dark:border-zinc-700 p-4">
+      <div className="table-cell align-middle border-b border-zinc-700 dark:border-zinc-700 p-3">
         {token.market_cap_rank}
       </div>
-      <div className="table-cell pr-6 border-b border-x bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-700 dark:border-zinc-700 p-4">
-          <div className="flex items-baseline w-max">
+      <div className="table-cell align-middle pr-6 border-b border-x bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-700 dark:border-zinc-700 p-3">
+          <div className="flex items-center w-max">
             <Image
               loader={() => token.image}
               unoptimized={true}  
@@ -31,7 +31,7 @@ const TokenItemList = ({ token, userData }) => {
               width={32}
               src={token.image}
               alt={token.name}
-              className="self-start w-8 h-8 rounded-full mx-1"
+              className="self-center w-8 h-8 rounded-full mx-1"
             />
             <div className="flex flex-col md:flex-row">
             <p className="ms-2 font-medium">
@@ -41,10 +41,10 @@ const TokenItemList = ({ token, userData }) => {
             </div>
           </div>
       </div>
-      <div className="table-cell text-sm font-medium border-b border-zinc-700 dark:border-zinc-700 p-4">
+      <div className="table-cell align-middle text-sm font-medium border-b border-zinc-700 dark:border-zinc-700 p-3">
          <div>₹{token.current_price.toLocaleString("en-IN")}</div>
       </div>
-      <div className="table-cell text-sm border-b border-zinc-700 dark:border-zinc-700 p-4">
+      <div className="table-cell align-middle text-sm border-b border-zinc-700 dark:border-zinc-700 p-3">
         <span
           className={`text-xs font-medium px-3 py-1 rounded-full ${
             token.price_change_percentage_24h > 0
@@ -55,10 +55,10 @@ const TokenItemList = ({ token, userData }) => {
           {token.price_change_percentage_24h.toFixed(3)}%
         </span>
       </div>
-      <div className="table-cell text-sm border-b border-zinc-700 dark:border-zinc-700 p-4">
+      <div className="table-cell align-middle text-sm border-b border-zinc-700 dark:border-zinc-700 p-3">
           ₹{token.market_cap.toLocaleString("en-IN")}
       </div>
-      <div className="table-cell text-sm text-end border-b border-zinc-700 dark:border-zinc-700 p-4">
+      <div className="table-cell align-middle text-sm text-end border-b border-zinc-700 dark:border-zinc-700 p-3">
       {userData ? (
         
           <WatchList token_id={token.id} isWatchlisted={token.iswatchlisted} />
