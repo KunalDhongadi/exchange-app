@@ -61,14 +61,21 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
       return;
     }
     const queryParams = fetchedUser.watchlist.join("%2c%20");
+
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
     console.log("url-",url);
-    const response = await fetch(url, {header : {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
-    }});
-    console.log("response-",response);
+    const response = await fetch(url,
+      {
+        withCredentials: true,
+        header : {
+          'X-Requested-With': 'XMLHttpRequest'
+      }});
+
+
+    // console.log("res-",res, "req-", req);
+    // console.log("response-",response);
     const tokens = await response.json();
-    console.log("tokens wtchlisted-",tokens);
+    // console.log("tokens wtchlisted-",tokens);
     tokens.forEach(token => {
       token.iswatchlisted =  true;
     });
@@ -185,7 +192,9 @@ router.get("/fetchactive", fetchUser,  async (req, res) => {
     console.log(`ids=${queryIds}`);
 
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
-    const response = await fetch(url);
+    const response = await fetch(url,{
+
+    });
     const tokenData = await response.json();
 
     for (let i = 0; i < tokens.length; i++) {
@@ -194,7 +203,7 @@ router.get("/fetchactive", fetchUser,  async (req, res) => {
       let id = tokens[i].token_id; 
       tokens[i].price = tokenData[id];
 
-      // console.log("priceee", tokenData[id])
+      console.log("priceee", tokenData[id]);
 
       portfolioValue += tokens[i].quantity * tokenData[id].inr;
       totalInvested += tokens[i].quantity * tokens[i].averageCost;
@@ -204,7 +213,8 @@ router.get("/fetchactive", fetchUser,  async (req, res) => {
     returnsPercentage = (totalReturns/ totalInvested) * 100;
 
 
-    res.json({portfolioValue,totalInvested, totalReturns, returnsPercentage,tokens});
+    res.json({tokenIds, portfolioValue,totalInvested, totalReturns, returnsPercentage,tokens});
+    // res.json({totalInvested,tokens});
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occured (Active Tokens)");

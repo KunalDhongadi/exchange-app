@@ -13,6 +13,7 @@ const Portfolio = () => {
   // console.log("userss", userData);
 
   const [tokens, setTokens] = useState();
+  const [prices, setPrices] = useState();
   const [details, setDetails] = useState({
     portfolioValue: 0,
     totalInvested: 0,
@@ -21,7 +22,6 @@ const Portfolio = () => {
   });
 
   const fetchActive = async () => {
-
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/exchange/fetchactive`,
@@ -33,8 +33,24 @@ const Portfolio = () => {
         },
       }
     );
+
     const data = await response.json();
     setTokens(data.tokens);
+
+    // //Getting live/current prices of those coins in active table (coins that user owns/ has some quantity)
+    // const queryIds = data.tokenIds.join(",");
+    // console.log(`ids=${queryIds}`);
+
+    // const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
+    // const prices_response = await fetch(url);
+    // const prices_data = await prices_response.json();
+    // setPrices(prices_data);
+
+
+    //Calculating details
+
+
+    
     const { portfolioValue, totalInvested, totalReturns, returnsPercentage } =
       data;
     setDetails({

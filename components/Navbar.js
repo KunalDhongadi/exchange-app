@@ -225,7 +225,7 @@ const Navbar = () => {
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex flex-shrink-0 items-center">
                 <Link href="/explore" className="flex no-underline items-center">
-                  <h1 className="text-white font-semibold text-lg">Coindeck</h1>
+                  <h1 className="text-white font-medium text-lg">Coindeck</h1>
                 </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex justify-between w-full">

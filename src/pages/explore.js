@@ -190,7 +190,7 @@ const Explore = () => {
     );
   }
 
-  let justBtn = "px-2 py-4 grow sm:grow-0 sm:mr-3 text-sm focus:outline-none text-center";
+  let justBtn = "px-2 py-4 grow sm:grow-0 sm:mr-3 sm:text-sm focus:outline-none text-center";
 
   let selectedBtnClass = justBtn + " text-zinc-200 border-b border-zinc-200";
 
@@ -201,7 +201,7 @@ const Explore = () => {
       {
         userData && (
           <div className="bg-zinc-800 border-b border-zinc-700">
-            <div className="flex justify-center sm:justify-start  mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+            <div className="flex justify-center sm:justify-start mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
               <button
                 type="button"
                 className={allTokens ? selectedBtnClass : unselectedBtnClass}
