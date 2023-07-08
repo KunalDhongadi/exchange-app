@@ -66,13 +66,16 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
     console.log("url-",url);
     const response = await fetch(url,
       {
-        withCredentials: true,
+        credentials: 'include',
         header : {
-          'X-Requested-With': 'XMLHttpRequest'
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json',
+          'ACCESS-CONTROL-ALLOW-ORIGIN': "*",
+          'Access-Control-Allow-Methods':"GET, POST, PUT, DELETE, OPTIONS"
       }});
 
 
-    // console.log("res-",res, "req-", req);
+    console.log("res-",res, "req-", req);
     // console.log("response-",response);
     const tokens = await response.json();
     // console.log("tokens wtchlisted-",tokens);
