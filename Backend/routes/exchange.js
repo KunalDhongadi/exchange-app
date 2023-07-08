@@ -64,19 +64,19 @@ router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
 
     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
     console.log("url-",url);
-    const response = await fetch(url,
-      {
-        credentials: 'include',
-        header : {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json',
-          'ACCESS-CONTROL-ALLOW-ORIGIN': "*",
-          'Access-Control-Allow-Methods':"GET, POST, PUT, DELETE, OPTIONS"
-      }});
+    const response = await fetch(url, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': "*",
+        'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
+      },
+      credentials: 'include'
+    });
 
 
-    console.log("res-",res, "req-", req);
-    // console.log("response-",response);
+    console.log("----------------------res-",res, "++++++++++++++++++++++++++++++req-", req);
+    console.log("response-",response);
     const tokens = await response.json();
     // console.log("tokens wtchlisted-",tokens);
     tokens.forEach(token => {
