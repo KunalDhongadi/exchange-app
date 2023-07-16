@@ -90,7 +90,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-background/75 backdrop-blur-xl border-b border-zinc-700 z-50 sticky top-0">
+      <nav className="bg-background/75 backdrop-blur-xl border-b border-zinc-750 z-50 sticky top-0">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-14 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -234,7 +234,7 @@ const Navbar = () => {
                     href="/explore"
                     className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                       pathname === "/explore"
-                        ? " text-lime-200 border border-zinc-700"
+                        ? " text-lime-200 border border-zinc-750"
                         : " text-zinc-200 no-underline"
                     }`}
                     aria-current={pathname === "/explore" ? "page" : undefined}
@@ -247,7 +247,7 @@ const Navbar = () => {
                         href="/portfolio"
                         className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                           pathname === "/portfolio"
-                            ? " text-lime-200 border border-zinc-700"
+                            ? " text-lime-200 border border-zinc-750"
                             : " text-zinc-200 no-underline"
                         }`}
                         aria-current={
@@ -261,7 +261,7 @@ const Navbar = () => {
                         href="/transactions"
                         className={`rounded-md px-5 py-2 hover:text-lime-200 text-sm ${
                           pathname === "/transactions"
-                            ? " text-lime-200 border border-zinc-700"
+                            ? " text-lime-200 border border-zinc-750"
                             : " text-zinc-200 no-underline"
                         }`}
                         aria-current={
@@ -338,13 +338,13 @@ const Navbar = () => {
           id="mobile-menu"
         >
           <div
-            className={`space-y-1 bg-background p-3 border-t border-zinc-700`}
+            className={`space-y-1 bg-background p-3 border-t border-zinc-750`}
           >
             <Link
               href="/explore"
               className={`block px-3 py-2 hover:text-lime-200 text-center ${
                 pathname === "/explore"
-                  ? " text-lime-200 border border-zinc-700 rounded-md"
+                  ? " text-lime-200 border border-zinc-750 rounded-md"
                   : " text-zinc-200 no-underline"
               }`}
               aria-current="page"
@@ -359,7 +359,7 @@ const Navbar = () => {
                   href="/portfolio"
                   className={`block px-3 py-2 hover:text-lime-200 text-center ${
                     pathname === "/portfolio"
-                      ? " text-lime-200 border border-zinc-700 rounded-md"
+                      ? " text-lime-200 border border-zinc-750 rounded-md"
                       : " text-zinc-200 no-underline"
                   }`}
                   onClick={() => setShowMenu(false)}
@@ -371,7 +371,7 @@ const Navbar = () => {
                   href="/transactions"
                   className={`block px-3 py-2 hover:text-lime-200 text-center ${
                     pathname === "/transactions"
-                      ? " text-lime-200 border border-zinc-700 rounded-md"
+                      ? " text-lime-200 border border-zinc-750 rounded-md"
                       : " text-zinc-200 no-underline"
                   }`}
                   onClick={() => setShowMenu(false)}

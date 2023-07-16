@@ -30,8 +30,8 @@ const UserAuthModal = () => {
         closable="true"
         popup={true}
         onClose={onClose}
-        className='bg-zinc-900 backdrop-opacity-10 border border-zinc-700 backdrop-blur-xl'
-        style={{'height': '100%', "backdrop-filter": "blur(6px)"}}
+        className='bg-zinc-900 backdrop-opacity-10 border border-zinc-750 backdrop-blur-xl'
+        style={{'height': '100%', "backdropFilter": "blur(6px)"}}
     >
     <Modal.Header className='bg-zinc-800'/>
     <Modal.Body className='bg-zinc-800'>

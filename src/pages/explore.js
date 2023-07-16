@@ -16,7 +16,6 @@ const Explore = () => {
 
   const [allTokens, setAllTokens] = useState(true); //if true- all tokens else only watchlisted ones
   const [watchlistCount, setWatchlistCount] = useState(0);
-  const [limitExceeded, setLimitExceeded] = useState(false);
 
   //toggle Between all and watchlisted coins
   const watchlistBtn = () => {
@@ -35,9 +34,20 @@ const Explore = () => {
       }
     );
     const data = await response.json();
-    setWatchlisted(data);
-    setWatchlistCount(data.length);
-    return data;
+
+    const queryParams = await data.join("%2c%20");
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
+
+    const current_prices_response = await fetch(url);
+    const prices_data = await current_prices_response.json();
+
+    await prices_data.forEach(token => {
+      token.iswatchlisted =  true;
+    });
+
+    setWatchlisted(prices_data);
+    setWatchlistCount(prices_data.length);
+    return prices_data;
   };
 
   const fetchTokens = async ({ pageParam = 1 }) => {
@@ -140,6 +150,7 @@ const Explore = () => {
         queryClient.setQueryData(["watchlisted-coins"], watchlisted);
       }
       if(watchlisted){
+        // console.log("watchlisted" , watchlisted);
         setWatchlistCount(watchlisted.length);
       }
     }
@@ -176,25 +187,13 @@ const Explore = () => {
     };
   }, []);
 
-  if (limitExceeded) {
-    return (
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 my-4">
-        <h3 className="mb-1 text-zinc-200">
-          Exceeded the API limit😪😪. Please try again after a while.
-        </h3>
-        <p className="text-zinc-300">
-          If you're logged in, you still should be able to access your portfolio
-          and transactions.
-        </p>
-      </div>
-    );
-  }
 
-  let justBtn = "px-2 py-4 grow sm:grow-0 sm:mr-3 sm:text-sm focus:outline-none text-center";
+  let justBtn = "px-2 py-4 sm:mr-3 sm:text-sm focus:outline-none text-center basis-1/2 sm:basis-auto";
 
   let selectedBtnClass = justBtn + " text-zinc-200 border-b border-zinc-200";
 
   let unselectedBtnClass = justBtn + " text-zinc-400 hover:text-zinc-200";
+
 
   return (
     <>
@@ -225,10 +224,16 @@ const Explore = () => {
         )
       }
 
-
       {coinsQuery.isError && (
-        <p className="my-4 text-zinc-200">{error_message}</p>
-      )}
+          <div className="mx-auto max-w-7xl my-10 sm:px-6 lg:px-8">
+            <p className="py-8 text-center text-zinc-200">
+              Some error occured. Please try again after a while.<br/>
+              If you're logged in, you still should be able to access your portfolio
+              and transactions.
+            </p>
+          </div>
+        )
+      }
 
       {coinsQuery.isSuccess && (
         <TokenList
@@ -240,13 +245,13 @@ const Explore = () => {
         />
       )}
 
-      {allTokens && (
+      {allTokens && !coinsQuery.isError && (
         <div className="flex justify-center mt-3 pb-6">
           <button
             disabled={coinsQuery.isFetching}
             type="button"
             className={`rounded-full mx-auto text-sm border p-2 px-6 border-zinc-700 text-zinc-400 flex items-center ${
-              !coinsQuery.isLoading && "cursor-pointer hover:text-zinc-200"
+              !coinsQuery.isLoading && "cursor-pointer hover:text-zinc-200 disabled:border-zinc-800 disabled:cursor-not-allowed"
             }`}
             onClick={loadMore}
           >

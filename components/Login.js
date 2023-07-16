@@ -82,7 +82,7 @@ const Login = () => {
     <div className="relative w-full h-full max-w-md md:h-auto">
         <div className="relative rounded-lg">
             <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">Login</h3>
-            <form className="space-y-6 pb-6 border-b border-zinc-700" method='POST' onSubmit={loginBtn}>
+            <form className="space-y-6 pb-6 border-b border-zinc-750" method='POST' onSubmit={loginBtn}>
                 {error && 
                     <div className="p-4 mb-4 text-sm rounded-lg border border-red-400/50 text-red-400/75" role="alert">
                         {error}
@@ -90,11 +90,11 @@ const Login = () => {
                 }
                 <div>
                     <label htmlFor="username" className="block mb-2 text-xs font-medium text-gray-900 dark:text-zinc-200">Username</label>
-                    <input type="text" name="username" id="username" className="bg-zinc-700 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-lime-200 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:placeholder-zinc-400 dark:text-white" placeholder="Enter your username" required onChange={onUsernameChange} value={username}/>
+                    <input type="text" name="username" id="username" className="bg-zinc-700 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-lime-200 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-750 dark:placeholder-zinc-400 dark:text-white" placeholder="Enter your username" required onChange={onUsernameChange} value={username}/>
                 </div>
                 <div>
                     <label htmlFor="password" className="block mb-2 text-xs font-medium text-gray-900 dark:text-zinc-200">Password</label>
-                    <input type="password" name="password" id="password" placeholder="Enter your password" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-blue-500 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:placeholder-zinc-400 dark:text-white" required
+                    <input type="password" name="password" id="password" placeholder="Enter your password" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-lime-200 focus:border-blue-500 block w-full p-2.5 dark:bg-zinc-800 dark:border-zinc-750 dark:placeholder-zinc-400 dark:text-white" required
                     onChange={onPasswordChange} value={password}/>
                 </div>
               

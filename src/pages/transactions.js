@@ -107,23 +107,23 @@ const transactions = () => {
             <>
           <h1 className="text-md text-zinc-200 py-4">Transactions</h1>
 
-          <div className="overflow-x-auto border pb-4 border-zinc-700 mb-6 rounded-lg">
+          <div className="overflow-x-auto border pb-4 border-zinc-750 mb-6 rounded-lg">
             <div className="table w-full text-sm text-left">
               <div className="table-header-group text-xs text-zinc-500">
                 <div className="table-row font-medium text-zinc-400">
-                  <div className="table-cell text-xs border-b border-r bg-background text-zinc-500 md:bg-background border-zinc-700 px-6 py-3 md:border-x-0 sticky left-0 md:static">
+                  <div className="table-cell text-xs border-b border-r bg-background text-zinc-500 md:bg-background border-zinc-750 px-6 py-3 md:border-x-0 sticky left-0 md:static">
                     Asset name
                   </div>
-                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-750 text-zinc-500 px-6 py-3">
                     Price
                   </div>
-                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-750 text-zinc-500 px-6 py-3">
                     Quantity
                   </div>
-                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3">
+                  <div className="table-cell text-xs border-b border-zinc-750 text-zinc-500 px-6 py-3">
                     Total Value
                   </div>
-                  <div className="table-cell text-xs border-b border-zinc-700 text-zinc-500 px-6 py-3"></div>
+                  <div className="table-cell text-xs border-b border-zinc-750 text-zinc-500 px-6 py-3"></div>
                 </div>
               </div>
               <div className="table-row-group">
@@ -133,10 +133,10 @@ const transactions = () => {
                     return (
                       <div
                         key={transaction.txn_timestamp}
-                        className="table-row text-white dark:bg-inherit dark:border-zinc-700"
+                        className="table-row text-white dark:bg-inherit dark:border-zinc-750"
                       >
                         <div
-                          className="table-cell border-b border-r bg-background md:bg-background border-zinc-700 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
+                          className="table-cell border-b border-r bg-background md:bg-background border-zinc-750 px-6 py-4 font-medium md:border-x-0 sticky left-0 md:static text-gray-900 whitespace-nowrap dark:text-white"
                         >
                           <div className="flex w-max">
                           <Image
@@ -160,16 +160,16 @@ const transactions = () => {
 
                           </div>
                         </div>
-                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-750 px-6 py-4 align-top">
                           ₹{transaction.price.toLocaleString("en-IN")}
                         </div>
-                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-750 px-6 py-4 align-top">
                           {Number.isInteger(transaction.quantity)
                             ? Math.abs(transaction.quantity)
                             : formatFloat(transaction.quantity, 3)}
                           {transaction.symbol.toUpperCase()}
                         </div>
-                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-750 px-6 py-4 align-top">
                           <p className="font-medium">
                             {Number.isInteger(totalValue)
                               ? transaction.quantity > 0
@@ -182,7 +182,7 @@ const transactions = () => {
                             INR
                           </p>
                         </div>
-                        <div className="table-cell text-sm border-b border-zinc-700 px-6 py-4 align-top">
+                        <div className="table-cell text-sm border-b border-zinc-750 px-6 py-4 align-top text-right">
                           {transaction.quantity > 0 ?
                           <p><span className="font-medium">Bought</span> {formatDateTime(1, transaction.txn_timestamp)}</p>:
                           <p><span className="font-medium">Sold</span> {formatDateTime(1, transaction.txn_timestamp)}</p>

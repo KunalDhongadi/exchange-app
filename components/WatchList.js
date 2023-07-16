@@ -82,6 +82,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
           
           const index = tokens.findIndex(token => token.id === token_id);
           const tokenObj = tokens.filter(token => token.id === token_id);
+
    
           // if(index !== -1){
           //   const updatedTokenList = [...tokens];
@@ -89,7 +90,9 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
           //   setTokens(updatedTokenList);
           // }
           if(json.watchlisted){
-            setWatchlisted([...watchlisted, tokenObj[0]]);
+            const updatedCoin  = tokenObj[0];
+            updatedCoin.iswatchlisted = json.watchlisted;
+            setWatchlisted([...watchlisted, updatedCoin]);
           }else{
             setWatchlisted(watchlisted.filter(w => w.id!==token_id));
           }
@@ -107,7 +110,7 @@ const WatchList = ({token_id, isWatchlisted, isTokenPage}) => {
  
   return (
     <>
-    <motion.div whileHover="hover" whileTap="tap" className='rounded-full bg-zinc-800 border border-zinc-700 flex w-12 h-12 justify-center items-center outline-none group' onClick={watchlistToken}>
+    <motion.div whileHover="hover" whileTap="tap" className='rounded-full bg-zinc-800 border border-zinc-750 flex w-12 h-12 justify-center items-center outline-none group' onClick={watchlistToken}>
     {
       watchlistedCoin ?
       <motion.svg variants={svgVariants} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="inline-block text-lime-200 group outline:none" viewBox="0 0 16 16">

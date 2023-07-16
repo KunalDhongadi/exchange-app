@@ -12,8 +12,8 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        'zinc-750' : '#2C2C2F',
-        'background' : '#232324'
+        'zinc-750' : '#303036',
+        'background' : '#1f1f20'
       },
       fontFamily:{
         'noto':['Noto Sans', 'sans-serif']  

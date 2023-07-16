@@ -19,10 +19,10 @@ const TokenItemList = ({ token, userData }) => {
 
   return (
     <Link href={tokenUrl} className="table-row rounded-md hover:bg-zinc-800 text-white">
-      <div className="table-cell align-middle border-b border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle border-b border-zinc-750 dark:border-zinc-750 p-3">
         {token.market_cap_rank}
       </div>
-      <div className="table-cell align-middle pr-6 border-b border-x bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle pr-6 border-b border-x bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-750 dark:border-zinc-750 p-3">
           <div className="flex items-center w-max">
             <Image
               loader={() => token.image}
@@ -41,10 +41,10 @@ const TokenItemList = ({ token, userData }) => {
             </div>
           </div>
       </div>
-      <div className="table-cell align-middle text-sm font-medium border-b border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle text-sm font-medium border-b border-zinc-750 dark:border-zinc-750 p-3">
          <div>₹{token.current_price.toLocaleString("en-IN")}</div>
       </div>
-      <div className="table-cell align-middle text-sm border-b border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle text-sm border-b border-zinc-750 dark:border-zinc-750 p-3">
         <span
           className={`text-xs font-medium px-3 py-1 rounded-full ${
             token.price_change_percentage_24h > 0
@@ -55,10 +55,10 @@ const TokenItemList = ({ token, userData }) => {
           {token.price_change_percentage_24h.toFixed(3)}%
         </span>
       </div>
-      <div className="table-cell align-middle text-sm border-b border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle text-sm border-b border-zinc-750 dark:border-zinc-750 p-3">
           ₹{token.market_cap.toLocaleString("en-IN")}
       </div>
-      <div className="table-cell align-middle text-sm text-end border-b border-zinc-700 dark:border-zinc-700 p-3">
+      <div className="table-cell align-middle text-sm text-end border-b border-zinc-750 dark:border-zinc-750 p-3">
       {userData ? (
         
           <WatchList token_id={token.id} isWatchlisted={token.iswatchlisted} />

@@ -468,7 +468,7 @@ const Token = () => {
     <>
       <div className="text-white">
         <nav
-          className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 text-zinc-400 border-b border-zinc-700"
+          className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 text-zinc-400 border-b border-zinc-750"
           aria-label="Breadcrumb"
         >
           <ol className="flex items-center space-x-1 md:space-x-3 py-2">
@@ -547,13 +547,13 @@ const Token = () => {
             </div>
 
             {activeDetails && activeDetails.length !== 0 && (
-              <div className="bg-inherit border border-zinc-700 rounded-lg my-3">
-                <h3 className="text-md text-zinc-200 p-3 border-b border-zinc-700">
+              <div className="bg-inherit border border-zinc-750 rounded-lg my-3">
+                <h3 className="text-md text-zinc-200 p-3 border-b border-zinc-750">
                   Summary
                 </h3>
 
                 <div className="flex flex-col lg:flex-row">
-                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-700 p-3">
+                  <div className="basis-1/2  border-b lg:border-b-0 lg:border-r border-zinc-750 p-3">
                     <p className="text-xs text-zinc-400">Available Qty.</p>
                     <p className="font-medium">
                       {parseFloat(activeDetails.quantity.toFixed(5))}{" "}
@@ -601,7 +601,7 @@ const Token = () => {
             <div className="mt-5">
               <p className="text-zinc-200 text-md mb-2">Market Data</p>
               <div className="flex gap-4">
-                <div className="grow border-r-2 border-zinc-700">
+                <div className="grow border-r-2 border-zinc-750">
                   <p className="text-xs text-zinc-400">Market Cap</p>
                   <p>
                     ₹
@@ -651,8 +651,8 @@ const Token = () => {
           </div>
 
           <div className="lg:w-2/6 md:w-2/5 w-full">
-            <div className="bg-background border border-zinc-700 rounded-xl text-zinc-200 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
-              <div className="flex py-6 px-4 text-sm border-b border-zinc-700">
+            <div className="bg-background border border-zinc-750 rounded-xl text-zinc-200 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+              <div className="flex py-6 px-4 text-sm border-b border-zinc-750">
                 <button
                   className={`flex-1 text-center rounded-full py-2 border ${
                     isBuy
@@ -683,8 +683,8 @@ const Token = () => {
                   >
                     Enter Quantity
                   </label>
-                  <div className="flex rounded-lg border border-zinc-700 focus-within:border-lime-200">
-                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-700">
+                  <div className="flex rounded-lg border border-zinc-750 focus-within:border-lime-200">
+                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-750">
                       {tokenDetails.symbol.toUpperCase()}
                     </span>
                     <input
@@ -705,8 +705,8 @@ const Token = () => {
                   >
                     Total Value
                   </label>
-                  <div className="flex rounded-lg border border-zinc-700 focus-within:border-lime-200">
-                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-700">
+                  <div className="flex rounded-lg border border-zinc-750 focus-within:border-lime-200">
+                    <span className="inline-flex items-center w-1/5 justify-center m-1.5 my-2 text-xs font-medium text-zinc-200  border-r border-zinc-750">
                       INR
                     </span>
                     <input
@@ -796,15 +796,15 @@ const Token = () => {
             </div>
 
             {transactionDetails &&  transactionDetails[0] !== undefined && transactionDetails.length > 0 && (
-              <div className="border border-zinc-700 rounded-lg my-4 pb-4">
-                <h3 className="text-md p-4 text-zinc-400 border-b border-zinc-700">
+              <div className="border border-zinc-750 rounded-lg my-4 pb-4">
+                <h3 className="text-md p-4 text-zinc-200 border-b border-zinc-750">
                   Recent Transaction
                 </h3>
 
                 {transactionDetails.map((transaction) => {
                   return (
                     <div
-                      className="border-b text-sm border-zinc-700 p-4"
+                      className="border-b text-sm border-zinc-750 p-4"
                       key={transaction.txn_timestamp}
                     >
                       <div className="flex items-center">
@@ -865,13 +865,13 @@ const Token = () => {
           size="md"
           dismissible={true}
           onClose={onModalClose}
-          className='bg-zinc-900 backdrop-opacity-10 border border-zinc-700'
-          style={{'height': '100%', "backdrop-filter": "blur(6px)"}}
+          className='bg-zinc-900 backdrop-opacity-10 border border-zinc-750'
+          style={{'height': '100%', "backdropFilter": "blur(6px)"}}
         >
-          <Modal.Header className="bg-zinc-800 border text-md dark:border-zinc-700">
+          <Modal.Header className="bg-zinc-800 border text-md dark:border-zinc-750">
             Confirm Order
           </Modal.Header>
-          <Modal.Body className="bg-zinc-800 text-zinc-200 border-x dark:border-zinc-700">
+          <Modal.Body className="bg-zinc-800 text-zinc-200 border-x dark:border-zinc-750">
             <div className="space-y-2">
               <p className="">
                 {isBuy
@@ -903,7 +903,7 @@ const Token = () => {
               </div>
             </div>
           </Modal.Body>
-          <Modal.Footer className="bg-zinc-800 border dark:border-zinc-700">
+          <Modal.Footer className="bg-zinc-800 border dark:border-zinc-750">
             <button
               data-modal-hide="confirm-modal"
               type="button"

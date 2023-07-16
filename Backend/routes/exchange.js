@@ -52,42 +52,50 @@ router.get("/fetchalltokens", async (req, res) => {
   }
 });
 
-// Route 2: Get Watchlisted tokens/coins
+// Route 2: (Not in use) Get Watchlisted tokens/coins
+// router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
+//   try {
+//     const fetchedUser = await User.findById(req.user.id);
+//     if(fetchedUser.watchlist.length === 0){
+//       res.json([]);
+//       return;
+//     }
+//     const queryParams = fetchedUser.watchlist.join("%2c%20");
+
+//     const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
+//     console.log("url-",url);
+//     const response = await fetch(url, {
+//       headers: {
+//         'X-Requested-With': 'XMLHttpRequest',
+//         'Content-Type': 'application/json',
+//         'Access-Control-Allow-Origin': "*",
+//         'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
+//       },
+//       credentials: 'include'
+//     });
+
+//     const tokens = await response.json();
+//     tokens.forEach(token => {
+//       token.iswatchlisted =  true;
+//     });
+//     res.json(tokens);
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Some error occured");
+//   }
+// });
+
 router.get("/fetchwatchlisted", fetchUser,  async (req, res) => {
   try {
     const fetchedUser = await User.findById(req.user.id);
-    if(fetchedUser.watchlist.length === 0){
-      res.json([]);
-      return;
-    }
-    const queryParams = fetchedUser.watchlist.join("%2c%20");
-
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
-    console.log("url-",url);
-    const response = await fetch(url, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': "*",
-        'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
-      },
-      credentials: 'include'
-    });
-
-
-    console.log("----------------------res-",res, "++++++++++++++++++++++++++++++req-", req);
-    console.log("response-",response);
-    const tokens = await response.json();
-    // console.log("tokens wtchlisted-",tokens);
-    tokens.forEach(token => {
-      token.iswatchlisted =  true;
-    });
-    res.json(tokens);
+    res.json(fetchedUser.watchlist);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Some error occured");
+    res.status(500).send("Some error occured while fetching watchlisted coins");
   }
 });
+
+
 
 // Route 3: (Not in use) Get specific token details from the external API. Login not required. If loggedIn, check if watchlisted.
 router.get("/fetchtoken/:symbol", async (req, res) => {
@@ -116,9 +124,6 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
     }
 
     const token = await response.json();
-
-
-    // console.log("bdabda", token.market_data[0]);
 
     // Deleting unwanted fields
     delete token.asset_platform_id;
@@ -162,13 +167,10 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
         delete token.market_data.total_volume[currency];
       }
     }
-
-
     // if(user){
     //     const fetchedUser = await User.findById(user.id);
     //     token.iswatchlisted =  fetchedUser.watchlist.includes(token.id); 
     // }
-
     res.status(200).json(token);
 
   } catch (error) {
@@ -178,51 +180,72 @@ router.get("/fetchtoken/:symbol", async (req, res) => {
 });
 
 
-// Route 4: Get the active investments/ portfolio of the user. For each token in the db, fetch their live prices
-
+//Return the coins and their quantity/other details owned by the user.
 router.get("/fetchactive", fetchUser,  async (req, res) => {
   try {
     const tokens = await Active.find({ user: req.user.id }).lean();
     let tokenIds = [];
 
-    let portfolioValue = 0, totalInvested = 0, totalReturns=0 , returnsPercentage=0;
-
     for (let i = 0; i < tokens.length; i++) {
       tokenIds.push(encodeURIComponent(tokens[i].token_id));
     }
     
-    const queryIds = tokenIds.join(",");
-    console.log(`ids=${queryIds}`);
-
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
-    const response = await fetch(url,{
-
-    });
-    const tokenData = await response.json();
-
     for (let i = 0; i < tokens.length; i++) {
       const averageCost = await getAverageCost(req.user.id, tokens[i].token_id);
       tokens[i].averageCost = averageCost;      
-      let id = tokens[i].token_id; 
-      tokens[i].price = tokenData[id];
-
-      console.log("priceee", tokenData[id]);
-
-      portfolioValue += tokens[i].quantity * tokenData[id].inr;
-      totalInvested += tokens[i].quantity * tokens[i].averageCost;
     }
-
-    totalReturns = portfolioValue - totalInvested;
-    returnsPercentage = (totalReturns/ totalInvested) * 100;
-
-
-    res.json({tokenIds, portfolioValue,totalInvested, totalReturns, returnsPercentage,tokens});
-    // res.json({totalInvested,tokens});
+    res.json({tokenIds,tokens});
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occured (Active Tokens)");
   }
 });
+
+
+// Route 4: (Not in use) Get the active investments/ portfolio of the user. For each token in the db, fetch their live prices
+// router.get("/fetchactive", fetchUser,  async (req, res) => {
+//   try {
+//     const tokens = await Active.find({ user: req.user.id }).lean();
+//     let tokenIds = [];
+
+//     let portfolioValue = 0, totalInvested = 0, totalReturns=0 , returnsPercentage=0;
+
+//     for (let i = 0; i < tokens.length; i++) {
+//       tokenIds.push(encodeURIComponent(tokens[i].token_id));
+//     }
+    
+//     const queryIds = tokenIds.join(",");
+//     console.log(`ids=${queryIds}`);
+
+//     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
+//     const response = await fetch(url,{
+
+//     });
+//     const tokenData = await response.json();
+
+//     for (let i = 0; i < tokens.length; i++) {
+//       const averageCost = await getAverageCost(req.user.id, tokens[i].token_id);
+//       tokens[i].averageCost = averageCost;      
+//       let id = tokens[i].token_id; 
+//       tokens[i].price = tokenData[id];
+
+//       console.log("priceee", tokenData[id]);
+
+//       portfolioValue += tokens[i].quantity * tokenData[id].inr;
+//       totalInvested += tokens[i].quantity * tokens[i].averageCost;
+//     }
+
+//     totalReturns = portfolioValue - totalInvested;
+//     returnsPercentage = (totalReturns/ totalInvested) * 100;
+
+
+//     res.json({tokenIds, portfolioValue,totalInvested, totalReturns, returnsPercentage,tokens});
+//     // res.json({totalInvested,tokens});
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Some error occured (Active Tokens)");
+//   }
+// });
 
 // Route 5: Get the transaction history of the investments. Login Required.
 router.get("/fetchtransactions", fetchUser,  async (req, res) => {

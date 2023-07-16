@@ -10,6 +10,8 @@ import LoadingBar from 'react-top-loading-bar'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import TokenContext from '../../context/tokenContext'
+import { Analytics } from '@vercel/analytics/react';
+
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -110,7 +112,7 @@ export default function MyApp({ Component, pageProps }) {
       </UserContext.Provider>  
       <ReactQueryDevtools/>
     </QueryClientProvider>
-    
+    <Analytics />
     </>
   )
 }

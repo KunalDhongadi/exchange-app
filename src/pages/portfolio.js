@@ -13,7 +13,7 @@ const Portfolio = () => {
   // console.log("userss", userData);
 
   const [tokens, setTokens] = useState();
-  const [prices, setPrices] = useState();
+  const [activeCoins, setActiveCoins] = useState();
   const [details, setDetails] = useState({
     portfolioValue: 0,
     totalInvested: 0,
@@ -36,30 +36,52 @@ const Portfolio = () => {
 
     const data = await response.json();
     setTokens(data.tokens);
-
-    // //Getting live/current prices of those coins in active table (coins that user owns/ has some quantity)
-    // const queryIds = data.tokenIds.join(",");
-    // console.log(`ids=${queryIds}`);
-
-    // const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
-    // const prices_response = await fetch(url);
-    // const prices_data = await prices_response.json();
-    // setPrices(prices_data);
-
-
-    //Calculating details
-
-
-    
-    const { portfolioValue, totalInvested, totalReturns, returnsPercentage } =
-      data;
-    setDetails({
-      portfolioValue,
-      totalInvested,
-      totalReturns,
-      returnsPercentage,
-    });
+    setActiveCoins(data.tokenIds)
   };
+
+
+  useEffect(() => {
+    if(tokens && activeCoins){
+
+      //Getting live/current prices of those coins in active table (coins that user owns/ has some quantity)
+      const getLivePrices =  async() => {
+        const queryIds = activeCoins.join(",");
+        // console.log(`ids=${queryIds}`);
+
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${queryIds}&vs_currencies=inr&include_24hr_change=true`;
+        const prices_response = await fetch(url);
+        const prices_data = await prices_response.json();
+
+        let totalInvested = 0, portfolioValue = 0, totalReturns = 0, returnsPercentage = 0;
+
+        //Calculating details
+        for (let i = 0; i < tokens.length; i++) {    
+          let id = tokens[i].token_id; 
+          tokens[i].price = prices_data[id];
+          totalInvested += tokens[i].quantity * tokens[i].averageCost;
+          portfolioValue += tokens[i].quantity * prices_data[id].inr;
+        }
+
+        totalReturns = portfolioValue - totalInvested;
+        returnsPercentage = (totalReturns/ totalInvested) * 100;
+
+
+        setDetails({
+          portfolioValue : portfolioValue,
+          totalInvested : totalInvested,
+          totalReturns : totalReturns,
+          returnsPercentage : returnsPercentage,
+        });
+      } 
+
+      getLivePrices();
+    }
+  }, [tokens, activeCoins])
+
+  // useEffect(() => {
+  //   console.log("tokens-", tokens);
+  //   console.log("details-", details);
+  // }, [tokens, details]);
 
   useEffect(() => {
 
@@ -68,7 +90,6 @@ const Portfolio = () => {
     }
     if (userData) {
       fetchActive();
-      // console.log("useEffect for getting addtional Details");
     }
   }, [userData]);
 
@@ -138,11 +159,11 @@ const Portfolio = () => {
                     //     ? "text-green-600"
                     //     : "text-red-500"
                     // }`}
-                    className={`text-xl flex items-center font-medium text-zinc-800`}
+                    className={`text-xl flex items-center font-semibold text-zinc-800`}
                   >
                     {formatFloat2(details.totalReturns, 2, true)}
                     <span
-                      className={`text-sm ms-2 font-medium px-3 py-1 rounded-full ${
+                      className={`text-sm ms-2 font-semibold px-3 py-1 rounded-full ${
                         details.totalReturns > 0
                           ? "border border-zinc-800 text-zinc-800"
                           : "border border-zinc-800 text-zinc-800"
@@ -162,7 +183,7 @@ const Portfolio = () => {
                   <p className="text-xs font-medium text-zinc-700">
                     Invested Value (INR)
                   </p>
-                  <h1 className="text-md font-medium text-zinc-800">
+                  <h1 className="text-md font-semibold text-zinc-800">
                     ₹{formatFloat(details.totalInvested, 2)}
                   </h1>
                 </div>
@@ -170,7 +191,7 @@ const Portfolio = () => {
                   <p className="text-xs font-medium text-zinc-700">
                     INR Balance
                   </p>
-                  <h3 className="text-md font-medium text-zinc-800">
+                  <h3 className="text-md font-semibold text-zinc-800">
                     ₹
                     {userData && userData != undefined
                       ? formatFloat(userData.cash, 2)
@@ -187,29 +208,29 @@ const Portfolio = () => {
                 All Assets
               </p>
 
-              <div className="overflow-x-auto pb-4 border border-zinc-700 rounded-lg">
+              <div className="overflow-x-auto pb-4 border border-zinc-750 rounded-lg">
                 <div className="table w-full">
                   <div className="table-header-group">
                     <div className="table-row">
-                      <div className="table-cell text-xs border-b border-r bg-zinc-800 md:bg-inherit md:border-x-0 sticky left-0 md:static dark:border-zinc-700 font-medium px-6 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b border-r bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static dark:border-zinc-750 font-medium px-6 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Asset name
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-750 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Price
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-750 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Holdings
                       </div>
-                      <div className="table-cell text-xs border-b whitespace-nowrap dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b whitespace-nowrap dark:border-zinc-750 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
                         Invested INR
                       </div>
-                      <div className="table-cell text-xs border-b dark:border-zinc-700 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 text-left">
+                      <div className="table-cell text-xs border-b dark:border-zinc-750 font-medium p-4 py-2 text-slate-400 dark:text-zinc-500 px-6 text-right">
                         Returns
                       </div>
                     </div>
                   </div>
                   <div className="table-row-group">
-                    {tokens.map((token) => {
+                    {tokens[0].price && tokens.map((token) => {
                       let tokenUrl = `coins/${token.token_id}`;
                       let investedValue = token.quantity * token.averageCost;
                       let totalReturns =
@@ -221,7 +242,7 @@ const Portfolio = () => {
                           key={token.token_id}
                           className="table-row text-white"
                         >
-                          <div className="table-cell border-b border-r bg-zinc-800 md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-700 dark:border-zinc-700 p-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <div className="table-cell border-b border-r bg-background md:bg-inherit md:border-x-0 sticky left-0 md:static border-zinc-750 dark:border-zinc-750 p-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <div className="flex w-max items-baseline">
                               <img
                                 src={token.image_url}
@@ -241,10 +262,10 @@ const Portfolio = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="table-cell text-sm border-b border-zinc-700 p-4">
+                          <div className="table-cell text-sm border-b border-zinc-750 p-4">
                             ₹{token.price.inr.toLocaleString("en-IN")}
                           </div>
-                          <div className="table-cell border-b border-zinc-700 p-4">
+                          <div className="table-cell border-b border-zinc-750 p-4">
                             <p className="font-medium text-sm">
                               ₹
                               {formatFloat(token.quantity * token.price.inr, 2)}
@@ -254,13 +275,13 @@ const Portfolio = () => {
                               {token.symbol.toUpperCase()}
                             </p>
                           </div>
-                          <div className="table-cell text-sm border-b border-zinc-700 p-4">
+                          <div className="table-cell text-sm border-b border-zinc-750 p-4">
                             ₹{formatFloat(investedValue, 2)}
                           </div>
                           <div
-                            className={`table-cell text-sm whitespace-nowrap border-b border-zinc-700 p-4`}
+                            className={`table-cell text-sm whitespace-nowrap border-b border-zinc-750 p-4 px-6`}
                           >
-                            <div className="flex">
+                            <div className="flex justify-end">
                               <p
                                 className={`text-sm font-medium ${
                                   totalReturns > 0
@@ -294,12 +315,14 @@ const Portfolio = () => {
             <div className="md:w-full w-full my-4">
               <p className="text-md text-zinc-200 py-2">Insights</p>
 
+              {tokens[0].price && 
               <div className="overflow-x-auto">
                 <PiechartComponent
                   portfolioValue={details.portfolioValue}
                   tokens={tokens}
                 />
               </div>
+              }
             </div>
           </div>
         </>

@@ -16,7 +16,7 @@ const Toast = ({ showToast, setShowToast, toastMessage }) => {
     {showToast && 
     <div
       id="toast-success"
-      className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-zinc-800 shadow-2xl shadow-zinc-900 rounded-lg bg-lime-200"
+      className="fixed z-50 bottom-4 left-1/2 transform -translate-x-1/2 flex items-center w-full max-w-xs p-4 mb-4 text-zinc-800 shadow-2xl shadow-zinc-900 rounded-lg bg-lime-200"
       role="alert"
     >
       <div className="text-sm font-medium">{toastMessage}</div>
