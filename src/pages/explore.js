@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { Metadata } from 'next';
 import TokenList from "../../components/TokenList";
 import TokenContext from "../../context/tokenContext";
 import UserContext from "../../context/userContext";
@@ -7,6 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import Head from "next/head";
 
 const Explore = () => {
 
@@ -16,6 +18,7 @@ const Explore = () => {
 
   const [allTokens, setAllTokens] = useState(true); //if true- all tokens else only watchlisted ones
   const [watchlistCount, setWatchlistCount] = useState(0);
+
 
   //toggle Between all and watchlisted coins
   const watchlistBtn = () => {
@@ -35,19 +38,24 @@ const Explore = () => {
     );
     const data = await response.json();
 
-    const queryParams = await data.join("%2c%20");
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
+    if(data && data.length > 0){
+      const queryParams = await data.join("%2c%20");
+      const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=${queryParams}&sparkline=false`;
+  
+      const current_prices_response = await fetch(url);
+      const prices_data = await current_prices_response.json();
+  
+      await prices_data.forEach(token => {
+        token.iswatchlisted =  true;
+      });
+  
+      setWatchlisted(prices_data);
+      setWatchlistCount(prices_data.length);
+      return prices_data;
+    }
 
-    const current_prices_response = await fetch(url);
-    const prices_data = await current_prices_response.json();
+    return [];
 
-    await prices_data.forEach(token => {
-      token.iswatchlisted =  true;
-    });
-
-    setWatchlisted(prices_data);
-    setWatchlistCount(prices_data.length);
-    return prices_data;
   };
 
   const fetchTokens = async ({ pageParam = 1 }) => {
@@ -197,6 +205,9 @@ const Explore = () => {
 
   return (
     <>
+      <Head>
+        <title>Coindeck | Explore</title>
+      </Head>
       {
         userData && (
           <div className="bg-zinc-800 border-b border-zinc-700">

@@ -16,6 +16,11 @@ const Footer = () => {
         <a href="https://www.coingecko.com/" className="hover:text-zinc-300"> CoinGecko</a></p>
         
       </div>
+
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex justify-center py-3 border-y border-zinc-750 pointer-events-none hover:bg-lime-200">
+        <a href="https://kunal-dhongadi.vercel.app/" className="text-zinc-600 text-xs p-2 px-4 underline underline-offset-4 rounded-full  pointer-events-auto">by @Kunal</a>
+      </div>
+
     </footer>
   );
 };

@@ -4,6 +4,7 @@ import Link from "next/link";
 import PiechartComponent from "../../components/PiechartComponent";
 import { useRouter } from "next/router";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import Head from "next/head";
 
 const Portfolio = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -103,7 +104,7 @@ const Portfolio = () => {
       "₹" +
       parseFloat(Math.abs(number).toFixed(toFixedN)).toLocaleString("en-IN");
     if (sign) {
-      if (number > 0) {
+      if (number >= 0) {
         return "+" + floatStr;
       } else {
         return "-" + floatStr;
@@ -133,6 +134,9 @@ const Portfolio = () => {
 
   return (
     <>
+      <Head>
+        <title>Coindeck | Portfolio</title>
+      </Head>
       {userData && (
         <>
           <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 mt-2 flex flex-wrap items-start">
@@ -284,7 +288,7 @@ const Portfolio = () => {
                             <div className="flex justify-end">
                               <p
                                 className={`text-sm font-medium ${
-                                  totalReturns > 0
+                                  totalReturns >= 0
                                     ? "text-green-300"
                                     : "text-red-400"
                                 }`}
@@ -293,7 +297,7 @@ const Portfolio = () => {
                               </p>
                               <p
                                 className={`text-xs font-medium px-3 py-1 ms-2 rounded-full ${
-                                  returnsPercentage > 0
+                                  returnsPercentage >= 0
                                     ? "border border-green-300 text-green-300"
                                     : "border border-red-400 text-red-400"
                                 }`}

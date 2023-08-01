@@ -34,6 +34,7 @@ export default function MyApp({ Component, pageProps }) {
 
   // const [tokenDetails, setTokenDetails] = useState([]);
 
+
   const fetchUser = async(authToken) =>{
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/getuser`, {
       method: 'GET',

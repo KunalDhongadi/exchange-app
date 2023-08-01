@@ -8,6 +8,7 @@ import ModalContext from "../../../context/modalContext";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Toast from "../../../components/Toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 
 const Token = () => {
 
@@ -466,6 +467,9 @@ const Token = () => {
 
   return (
     <>
+      <Head>
+        <title>Coindeck | {tokenDetails.name}</title>
+      </Head>
       <div className="text-white">
         <nav
           className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 text-zinc-400 border-b border-zinc-750"

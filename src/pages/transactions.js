@@ -4,6 +4,7 @@ import UserContext from "../../context/userContext";
 import { useRouter } from "next/router";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Image from "next/image";
+import Head from "next/head";
 
 const transactions = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -101,6 +102,9 @@ const transactions = () => {
 
   return (
     <>
+      <Head>
+        <title>Coindeck | Transactions</title>
+      </Head>
       {userData && (
         <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           {transactions && transactions.length > 0 && (
