@@ -90,7 +90,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-background/75 backdrop-blur-xl border-b border-zinc-750 z-50 sticky top-0">
+      <nav className={`${showMenu ? "bg-background" : "bg-background/75" } backdrop-blur-xl border-b border-zinc-750 z-50 sticky top-0`}>
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-14 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -278,7 +278,7 @@ const Navbar = () => {
                   <div className="flex space-x-4">
                     <button
                       id="dropdownAvatarNameButton"
-                      className={`flex items-center border-gray-500 text-gray-300 hover:bg-zinc-700 hover:text-white rounded-md p-2 text-sm font-medium ${showDropdown ? "bg-zinc-700" : "bg-inherit"}`}
+                      className={`flex items-center border-zinc-500 text-zinc-300 hover:bg-zinc-700 hover:text-white rounded-md p-2 text-sm font-medium ${showDropdown ? "bg-zinc-700" : "bg-inherit"}`}
                       type="button"
                       onClick={onDropDownBtnClick}
                       // data-dropdown-offset-skidding="0"
