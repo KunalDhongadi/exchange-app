@@ -18,7 +18,7 @@ export default function Document() {
         <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,200;1,300&display=swap" rel="stylesheet"></link>
         <meta name="twitter:description" content="Coindeck - A cryptocurrency exchange"/>
         <meta name="twitter:image" content="/thumbnail.png"></meta>
-        <meta name="theme-color" content="rgb(24 24 27)"/>
+        <meta name="theme-color" content="#1f1f20"/>
       </Head>
       <body>
         <Main />
