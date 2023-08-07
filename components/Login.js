@@ -106,7 +106,7 @@ const Login = () => {
 
             <h3 className="my-6 text-md font-medium text-gray-900 dark:text-white">Hate the commitment?</h3>
             {!isLoading ? <button className="w-full text-lime-900 bg-lime-200 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-lime-200 dark:focus:ring-lime-200"onClick={guestLogin}>Continue as guest</button> : <LoadingSpinner />}
-
+            {isLoading  && <div className='mt-2 p-2 border border-zinc-600 text-xs text-zinc-400 bg-zinc-750/75 rounded-md'>This may take a few seconds to load due to inactivity.</div>}
 
         </div>
     </div>

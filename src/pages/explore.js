@@ -117,10 +117,20 @@ const Explore = () => {
     enabled: userData !== null && userData !== undefined
   });
 
+
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     if (userData !== null && userData !== undefined && watchlistedQuery.data === null) {
       watchlistedQuery.refetch();
     }
+
+    if(userData === null){
+      setWatchlisted([]);
+      setWatchlistCount(0);
+      queryClient.removeQueries(["watchlisted-coins"]);
+    }
+
   }, [userData]);
 
 
@@ -149,7 +159,7 @@ const Explore = () => {
 
 
 
-  const queryClient = useQueryClient();
+ 
 
   //updated the watchlisted cache when user watchlists any.
   useEffect(() => {

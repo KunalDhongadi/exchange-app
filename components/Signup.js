@@ -93,6 +93,8 @@ const Signup = () => {
                 <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
                     Already have an account? <a onClick={goToSignup} className="text-lime-200 hover:underline dark:text-lime-200 cursor-pointer">Login</a>
                 </div>
+                {isLoading  && <div className='mt-2 p-2 border border-zinc-600 text-xs text-zinc-400 bg-zinc-750/75 rounded-md'>This may take a few seconds to load due to inactivity.</div>}
+
             </form>
   
         </div>
