@@ -9,6 +9,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import Head from "next/head";
+import Image from "next/image";
+import ModalContext from "../../context/modalContext";
 
 const Explore = () => {
 
@@ -18,6 +20,9 @@ const Explore = () => {
 
   const [allTokens, setAllTokens] = useState(true); //if true- all tokens else only watchlisted ones
   const [watchlistCount, setWatchlistCount] = useState(0);
+
+  const { showModal, setShowModal, isLogin, setIsLogin } =
+    useContext(ModalContext);
 
 
   //toggle Between all and watchlisted coins
@@ -206,6 +211,17 @@ const Explore = () => {
   }, []);
 
 
+  const toggleLoginModal = () =>{
+    setShowModal(true);
+    setIsLogin(true);
+  }
+
+  const toggleSignupModal = () => {
+    setShowModal(true);
+    setIsLogin(false);
+  }
+
+
   let justBtn = "px-2 py-4 sm:mr-3 sm:text-sm focus:outline-none text-center basis-1/2 sm:basis-auto";
 
   let selectedBtnClass = justBtn + " text-zinc-200 border-b border-zinc-200";
@@ -219,8 +235,8 @@ const Explore = () => {
         <title>Coindeck | Explore</title>
       </Head>
       {
-        userData && (
-          <div className="bg-zinc-800 border-b border-zinc-700">
+        userData ? (
+          <div className="bg-zinc-800/80 border-b border-zinc-700">
             <div className="flex justify-center sm:justify-start mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
               <button
                 type="button"
@@ -241,6 +257,18 @@ const Explore = () => {
                 <span className="ms-2 px-2 rounded-sm bg-zinc-700">{watchlistCount}</span>
               </button>
             </div>
+          </div>
+        ) :
+        (
+          <div className="bg-zinc-800/80 mx-auto mb-4 max-w-7xl px-3 sm:px-6 lg:px-8 flex sm:flex-row flex-col-reverse justify-center sm:justify-between items-center border-b border-zinc-750">
+            <div className="rounded-md my-8 inline-flex flex-col mt-0 sm:mt-8 justify-center sm:justify-start">
+              <p className="text-xl text-center sm:text-left text-zinc-200">Buy, sell and manage your cryptocurrencies with ease.</p>
+              <p className="text-sm text-zinc-400 text-center sm:text-left">
+                <button className="underline" onClick={toggleLoginModal}>Login </button> or <button className="underline" onClick={toggleSignupModal}> Signup</button> to start your journey.</p>
+              {/* <button className="rounded-md px-4 py-2 sm:self-start self-center text-sm text-zinc-800 bg-white hover:bg-zinc-200">Let's Begin</button> */}
+            </div>
+            <Image className="me-6 opacity-40" src="/heroSection.png" width={220} height={48}/>
+
           </div>
         )
       }

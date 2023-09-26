@@ -26,6 +26,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 })
 
+app.get('/api/wake-up', (req,res) => {
+  res.send('Backend is awake!');
+})
+
 if(process.env.API_PORT){
   app.listen(process.env.API_PORT, () => {
     console.log(`the-exchange-app listening on port ${process.env.API_PORT}`)

@@ -42,25 +42,33 @@ export default function Home() {
     router.push('/explore');
   }, []);
 
+  const wakeUp = async() => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/wake-up`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await response.json();
+  }
 
   return (
     <>
-
     </>
   )
 }
 
-const fetcher = async (url) => {
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    }
-  );
-  const data = await response.json();
-  return data;
-}
+// const fetcher = async (url) => {
+//   const response = await fetch(
+//     url,
+//     {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "auth-token": localStorage.getItem("token"),
+//       },
+//     }
+//   );
+//   const data = await response.json();
+//   return data;
+// }
